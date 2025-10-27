@@ -1,0 +1,862 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="write-book-container">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+  </div>
+
+  <div class="container mt-4" style="max-width: 900px;">
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="header-icon">
+        <i class="fas fa-pen-fancy"></i>
+      </div>
+      <div class="header-text">
+        <h1 class="header-title">Viết Sách Mới</h1>
+        <p class="header-subtitle">Sáng tạo câu chuyện của riêng bạn</p>
+      </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="form-card">
+      <form method="POST" action="/api/books/write" id="writeBookForm">
+        
+        <!-- Title Input -->
+        <div class="form-group-custom">
+          <label for="title" class="form-label-custom">
+            <i class="fas fa-book"></i>
+            <span>Tên sách</span>
+            <span class="required-star">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              class="form-control-custom" 
+              placeholder="Nhập tên sách của bạn..."
+              required
+            >
+            <div class="input-border"></div>
+          </div>
+        </div>
+
+        <!-- Author Input -->
+        <div class="form-group-custom">
+          <label for="author" class="form-label-custom">
+            <i class="fas fa-user-edit"></i>
+            <span>Tác giả</span>
+            <span class="required-star">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="author" 
+              name="author" 
+              class="form-control-custom" 
+              value="<%= user.name %>" 
+              placeholder="Nhập tên tác giả..."
+              required
+            >
+            <div class="input-border"></div>
+          </div>
+          <small class="form-hint">Mặc định là tên tài khoản của bạn</small>
+        </div>
+
+        <!-- Category Select -->
+        <div class="form-group-custom">
+          <label for="category" class="form-label-custom">
+            <i class="fas fa-tags"></i>
+            <span>Thể loại</span>
+            <span class="required-star">*</span>
+          </label>
+          <div class="category-select-wrapper">
+            <div class="selected-categories" id="selectedCategories">
+              <span class="placeholder-text">Chọn thể loại cho sách của bạn...</span>
+            </div>
+            <div class="category-dropdown" id="categoryDropdown">
+              <div class="category-search">
+                <i class="fas fa-search"></i>
+                <input 
+                  type="text" 
+                  id="categorySearch" 
+                  placeholder="Tìm kiếm thể loại..."
+                  autocomplete="off"
+                >
+              </div>
+              <div class="category-options" id="categoryOptions">
+                <% categories.forEach(cat => { %>
+                  <label class="category-option">
+                    <input type="checkbox" name="category" value="<%= cat %>" class="category-checkbox">
+                    <span class="category-label"><%= cat %></span>
+                    <span class="checkmark"><i class="fas fa-check"></i></span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+          <small class="form-hint">Có thể chọn nhiều thể loại</small>
+        </div>
+
+        <!-- Description Textarea -->
+        <div class="form-group-custom">
+          <label for="description" class="form-label-custom">
+            <i class="fas fa-align-left"></i>
+            <span>Mô tả</span>
+          </label>
+          <div class="textarea-wrapper">
+            <textarea 
+              id="description" 
+              name="description" 
+              class="form-control-custom textarea-custom" 
+              rows="3"
+              placeholder="Viết mô tả ngắn gọn về sách của bạn..."
+            ></textarea>
+            <div class="textarea-border"></div>
+            <div class="char-counter">
+              <span id="descCharCount">0</span> / 500 ký tự
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Textarea -->
+        <div class="form-group-custom">
+          <label for="content" class="form-label-custom">
+            <i class="fas fa-feather-alt"></i>
+            <span>Nội dung sách</span>
+          </label>
+          <div class="textarea-wrapper">
+            <textarea 
+              id="content" 
+              name="content" 
+              class="form-control-custom textarea-custom content-textarea" 
+              rows="20"
+              placeholder="Bắt đầu viết sách của bạn tại đây...&#10;&#10;Hãy để trí tưởng tượng của bạn bay xa..."
+            ></textarea>
+            <div class="textarea-border"></div>
+            <div class="word-counter">
+              <div class="counter-item">
+                <i class="fas fa-font"></i>
+                <span id="wordCount">0</span> từ
+              </div>
+              <div class="counter-item">
+                <i class="fas fa-keyboard"></i>
+                <span id="charCount">0</span> ký tự
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons-group">
+          <button type="submit" name="action" value="draft" class="btn-action btn-draft">
+            <span class="btn-icon"><i class="fas fa-save"></i></span>
+            <span class="btn-text">Lưu bản nháp</span>
+            <div class="btn-ripple"></div>
+          </button>
+          <button type="submit" name="action" value="publish" class="btn-action btn-publish">
+            <span class="btn-icon"><i class="fas fa-rocket"></i></span>
+            <span class="btn-text">Đăng sách</span>
+            <div class="btn-ripple"></div>
+          </button>
+        </div>
+
+        <!-- Back Link -->
+        <div class="back-link-wrapper">
+          <a href="/books/my-books" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            <span>Quay lại kho Sách</span>
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+  }
+
+  .write-book-container {
+    position: relative;
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+
+  /* Animated Background */
+  .animated-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 20s infinite ease-in-out;
+  }
+
+  .shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -100px;
+  }
+
+  .shape-2 {
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    right: -100px;
+    animation-delay: 7s;
+  }
+
+  .shape-3 {
+    width: 200px;
+    height: 200px;
+    top: 40%;
+    right: 10%;
+    animation-delay: 14s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: translate(50px, 50px) rotate(120deg);
+    }
+    66% {
+      transform: translate(-50px, 50px) rotate(240deg);
+    }
+  }
+
+  /* Page Header */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    animation: slideDown 0.6s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-icon {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #667eea;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .header-text {
+    flex: 1;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0 0;
+  }
+
+  /* Form Card */
+  .form-card {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.8s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Form Groups */
+  .form-group-custom {
+    margin-bottom: 2rem;
+  }
+
+  .form-label-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-label-custom i {
+    color: #667eea;
+    font-size: 1.1rem;
+  }
+
+  .required-star {
+    color: #ef4444;
+    margin-left: 0.25rem;
+  }
+
+  .form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+
+  /* Input Wrapper */
+  .input-wrapper {
+    position: relative;
+  }
+
+  .form-control-custom {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+  }
+
+  .form-control-custom:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+
+  .input-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+  }
+
+  .form-control-custom:focus + .input-border {
+    width: 100%;
+  }
+
+  /* Category Select */
+  .category-select-wrapper {
+    position: relative;
+  }
+
+  .selected-categories {
+    min-height: 50px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .selected-categories:hover {
+    border-color: #667eea;
+    background: white;
+  }
+
+  .placeholder-text {
+    color: #9ca3af;
+    font-size: 0.95rem;
+  }
+
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    animation: tagAppear 0.3s ease;
+  }
+
+  @keyframes tagAppear {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .category-tag .remove-tag {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .category-tag .remove-tag:hover {
+    opacity: 1;
+  }
+
+  .category-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .category-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .category-search {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .category-search i {
+    color: #9ca3af;
+  }
+
+  .category-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .category-options {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .category-options::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .category-options::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+  }
+
+  .category-option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .category-option:hover {
+    background: #f3f4f6;
+  }
+
+  .category-checkbox {
+    display: none;
+  }
+
+  .category-label {
+    flex: 1;
+    color: #374151;
+    font-size: 0.95rem;
+  }
+
+  .checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .checkmark i {
+    font-size: 12px;
+    color: white;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+  }
+
+  .category-checkbox:checked ~ .checkmark {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+  }
+
+  .category-checkbox:checked ~ .checkmark i {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Textarea */
+  .textarea-wrapper {
+    position: relative;
+  }
+
+  .textarea-custom {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .content-textarea {
+    min-height: 400px;
+    line-height: 1.8;
+  }
+
+  .textarea-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+  }
+
+  .textarea-custom:focus + .textarea-border {
+    width: 100%;
+  }
+
+  .char-counter,
+  .word-counter {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 1rem;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    background: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .word-counter {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .counter-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .counter-item i {
+    color: #667eea;
+  }
+
+  /* Action Buttons */
+  .action-buttons-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 1.25rem 2rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn-action::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-action:hover::before {
+    width: 400px;
+    height: 400px;
+  }
+
+  .btn-icon,
+  .btn-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-draft {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    box-shadow: 0 10px 30px rgba(107, 114, 128, 0.3);
+  }
+
+  .btn-publish {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-action:active {
+    transform: translateY(-1px);
+  }
+
+  /* Back Link */
+  .back-link-wrapper {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+  }
+
+  .back-link:hover {
+    color: #667eea;
+    background: #f3f4f6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .header-title {
+      font-size: 2rem;
+    }
+
+    .page-header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .action-buttons-group {
+      flex-direction: column;
+    }
+
+    .content-textarea {
+      min-height: 300px;
+    }
+  }
+</style>
+
+<script>
+  // Category Dropdown Toggle
+  const selectedCategories = document.getElementById('selectedCategories');
+  const categoryDropdown = document.getElementById('categoryDropdown');
+  const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+  const categorySearch = document.getElementById('categorySearch');
+
+  selectedCategories.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('remove-tag')) {
+      categoryDropdown.classList.toggle('active');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.category-select-wrapper')) {
+      categoryDropdown.classList.remove('active');
+    }
+  });
+
+  // Update Selected Categories Display
+  function updateSelectedCategories() {
+    const checkedBoxes = Array.from(categoryCheckboxes).filter(cb => cb.checked);
+    
+    if (checkedBoxes.length === 0) {
+      selectedCategories.innerHTML = '<span class="placeholder-text">Chọn thể loại cho sách của bạn...</span>';
+    } else {
+      selectedCategories.innerHTML = checkedBoxes.map(cb => `
+        <span class="category-tag">
+          <span>${cb.value}</span>
+          <i class="fas fa-times remove-tag" data-value="${cb.value}"></i>
+        </span>
+      `).join('');
+
+      // Add remove tag listeners
+      document.querySelectorAll('.remove-tag').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const value = btn.getAttribute('data-value');
+          const checkbox = Array.from(categoryCheckboxes).find(cb => cb.value === value);
+          if (checkbox) {
+            checkbox.checked = false;
+            updateSelectedCategories();
+          }
+        });
+      });
+    }
+  }
+
+  categoryCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedCategories);
+  });
+
+  // Category Search
+  categorySearch.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const options = document.querySelectorAll('.category-option');
+    
+    options.forEach(option => {
+      const label = option.querySelector('.category-label').textContent.toLowerCase();
+      if (label.includes(searchTerm)) {
+        option.style.display = 'flex';
+      } else {
+        option.style.display = 'none';
+      }
+    });
+  });
+
+  // Description Character Counter
+  const descriptionTextarea = document.getElementById('description');
+  const descCharCount = document.getElementById('descCharCount');
+
+  descriptionTextarea.addEventListener('input', () => {
+    const count = descriptionTextarea.value.length;
+    descCharCount.textContent = count;
+    
+    if (count > 500) {
+      descCharCount.style.color = '#ef4444';
+    } else {
+      descCharCount.style.color = '#9ca3af';
+    }
+  });
+
+  // Content Word and Character Counter
+  const contentTextarea = document.getElementById('content');
+  const wordCount = document.getElementById('wordCount');
+  const charCount = document.getElementById('charCount');
+
+  contentTextarea.addEventListener('input', () => {
+    const text = contentTextarea.value.trim();
+    const chars = text.length;
+    const words = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+    
+    wordCount.textContent = words;
+    charCount.textContent = chars;
+  });
+
+  // Form Validation
+  const form = document.getElementById('writeBookForm');
+  
+  form.addEventListener('submit', (e) => {
+    const checkedCategories = Array.from(categoryCheckboxes).filter(cb => cb.checked);
+    
+    if (checkedCategories.length === 0) {
+      e.preventDefault();
+      alert('Vui lòng chọn ít nhất một thể loại!');
+      categoryDropdown.classList.add('active');
+      return false;
+    }
+  });
+</script>

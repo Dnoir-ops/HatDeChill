@@ -1,0 +1,618 @@
+<div class="container mt-4" style="max-width: 900px;">
+  <style>
+    /* ==== EDIT PAGE ULTIMATE ==== */
+    .edit-page-wrapper {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .edit-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      border-radius: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .edit-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      animation: rotate 8s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .edit-header h2 {
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .edit-header-icon {
+      font-size: 2.8rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .edit-form-card {
+      background: white;
+      padding: 45px;
+      border-radius: 25px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .form-group label {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group label i {
+      color: #667eea;
+      font-size: 1.3rem;
+    }
+
+    .form-control {
+      border: 2px solid #e0e0e0;
+      border-radius: 15px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      background: white;
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+    }
+
+    #content {
+      min-height: 400px;
+      font-size: 0.95rem;
+    }
+
+    /* Character counter */
+    .char-counter {
+      position: absolute;
+      bottom: -25px;
+      right: 10px;
+      font-size: 0.85rem;
+      color: #999;
+      font-weight: 600;
+    }
+
+    /* ==== BUTTONS ULTIMATE ==== */
+    .btn-action-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 35px;
+    }
+
+    .btn-ultimate {
+      padding: 16px 35px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 50px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ultimate::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-ultimate:hover::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    .btn-ultimate:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-ultimate i {
+      font-size: 1.3rem;
+      transition: transform 0.3s;
+    }
+
+    .btn-ultimate:hover i {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    .btn-draft {
+      background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+      color: white;
+    }
+
+    .btn-draft:hover {
+      background: linear-gradient(135deg, #596164 0%, #868f96 100%);
+    }
+
+    .btn-publish {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .btn-publish:hover {
+      background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    }
+
+    .btn-back {
+      background: white;
+      color: #667eea;
+      border: 3px solid #667eea;
+    }
+
+    .btn-back:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    /* ==== INFO BOXES ==== */
+    .info-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 25px;
+      border-radius: 20px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      animation: rotate 6s linear infinite;
+    }
+
+    .info-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .info-box-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .info-box-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .info-box-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ==== TIPS SECTION ==== */
+    .tips-section {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      color: white;
+      box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+    }
+
+    .tips-section h4 {
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+    }
+
+    .tips-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tips-section li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .tips-section li:last-child {
+      border-bottom: none;
+    }
+
+    .tips-section li i {
+      color: #ffd700;
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+
+    /* ==== RESPONSIVE ==== */
+    @media (max-width: 768px) {
+      .edit-header {
+        padding: 30px 25px;
+      }
+
+      .edit-header h2 {
+        font-size: 2rem;
+      }
+
+      .edit-form-card {
+        padding: 30px 25px;
+      }
+
+      .btn-action-group {
+        flex-direction: column;
+      }
+
+      .btn-ultimate {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .info-boxes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==== LOADING ANIMATION ==== */
+    .btn-ultimate.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn-ultimate.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      right: 20px;
+      margin-top: -10px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spinner 0.6s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <div class="edit-page-wrapper">
+    <!-- Header -->
+    <div class="edit-header">
+      <h2>
+        <span class="edit-header-icon">✏️</span>
+        Chỉnh sửa Sách
+      </h2>
+    </div>
+
+    <!-- Info Boxes -->
+    <div class="info-boxes">
+      <div class="info-box">
+        <div class="info-box-icon">📝</div>
+        <div class="info-box-label">Chế độ</div>
+        <div class="info-box-value">Chỉnh sửa</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-icon">📖</div>
+        <div class="info-box-label">Trạng thái</div>
+        <div class="info-box-value"><%= book.status || 'draft' %></div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-icon">🕐</div>
+        <div class="info-box-label">Cập nhật</div>
+        <div class="info-box-value">Hôm nay</div>
+      </div>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="tips-section">
+      <h4>
+        <i class="fas fa-lightbulb"></i>
+        Mẹo viết Sách hay
+      </h4>
+      <ul>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Tạo tiêu đề hấp dẫn để thu hút độc giả ngay từ cái nhìn đầu tiên</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Viết mô tả ngắn gọn nhưng đủ thông tin để giới thiệu nội dung</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Chia đoạn văn hợp lý để dễ đọc và tạo nhịp điệu cho câu chuyện</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Approval Notice -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px 30px; border-radius: 20px; margin-bottom: 30px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); animation: fadeInUp 0.6s ease-out 0.3s both;">
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+        <i class="fas fa-user-shield" style="font-size: 2.5rem; color: #ffd700; animation: pulse 2s infinite;"></i>
+        <div>
+          <h4 style="margin: 0; font-weight: 800; font-size: 1.3rem;">📢 Quy trình đăng Sách</h4>
+          <p style="margin: 5px 0 0 0; font-size: 0.95rem; opacity: 0.95;">Hiểu rõ trước khi hành động</p>
+        </div>
+      </div>
+      <div style="display: grid; gap: 12px;">
+        <div style="background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 10px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #ffd700;">
+          <i class="fas fa-save" style="font-size: 1.5rem; color: #ffd700;"></i>
+          <div>
+            <strong style="display: block; margin-bottom: 3px;">💾 Lưu bản nháp:</strong>
+            <span style="font-size: 0.9rem; opacity: 0.95;">Chỉ bạn và Admin mới xem được. Không cần kiểm duyệt.</span>
+          </div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.15); padding: 12px 18px; border-radius: 10px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #38ef7d;">
+          <i class="fas fa-rocket" style="font-size: 1.5rem; color: #38ef7d;"></i>
+          <div>
+            <strong style="display: block; margin-bottom: 3px;">🚀 Đăng Sách:</strong>
+            <span style="font-size: 0.9rem; opacity: 0.95;">Gửi đến Admin kiểm duyệt. Chờ 24-48h để được phê duyệt công khai.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="edit-form-card">
+      <form method="POST" action="/books/edit/<%= book._id %>" id="editForm">
+        <div class="form-group">
+          <label for="title">
+            <i class="fas fa-heading"></i>
+            Tên Sách
+          </label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-control" 
+            value="<%= book.title %>" 
+            placeholder="VD: Harry Potter và Hòn đá Phù thủy"
+            required
+          >
+          <small class="char-counter" id="titleCounter">0/100</small>
+        </div>
+
+        <div class="form-group">
+          <label for="category">
+            <i class="fas fa-tags"></i>
+            Thể loại
+          </label>
+          <input 
+            type="text" 
+            id="category" 
+            name="category" 
+            class="form-control" 
+            value="<%= book.category.join(', ') %>"
+            placeholder="VD: Tiểu thuyết, Khoa học viễn tưởng, Kinh dị..."
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="description">
+            <i class="fas fa-align-left"></i>
+            Mô tả
+          </label>
+          <textarea 
+            id="description" 
+            name="description" 
+            class="form-control" 
+            rows="3"
+            placeholder="Viết một đoạn giới thiệu ngắn gọn về Sách của bạn..."
+          ><%= book.description %></textarea>
+          <small class="char-counter" id="descCounter">0/500</small>
+        </div>
+
+        <div class="form-group">
+          <label for="content">
+            <i class="fas fa-book"></i>
+            Nội dung Sách
+          </label>
+          <textarea 
+            id="content" 
+            name="content" 
+            class="form-control" 
+            rows="15"
+            placeholder="Bắt đầu viết nội dung Sách của bạn tại đây...&#10;&#10;Mẹo: Chia đoạn văn rõ ràng để dễ đọc hơn!"
+          ><%= book.content %></textarea>
+          <small class="char-counter" id="contentCounter">0 từ</small>
+        </div>
+
+        <div class="btn-action-group">
+          <button 
+            type="submit" 
+            name="action" 
+            value="draft" 
+            class="btn-ultimate btn-draft"
+          >
+            <i class="fas fa-save"></i>
+            Lưu bản nháp
+          </button>
+          <button 
+            type="submit" 
+            name="action" 
+            value="publish" 
+            class="btn-ultimate btn-publish"
+            onclick="return confirm('Sách sẽ được gửi để Admin kiểm duyệt. Bạn có chắc muốn đăng sách?');"
+          >
+            <i class="fas fa-rocket"></i>
+            Đăng Sách
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+      <a href="/books/archive" class="btn-ultimate btn-back">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại kho Sách
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Character counter
+    function updateCounter(inputId, counterId, maxChars, isWordCount = false) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      
+      function update() {
+        if (isWordCount) {
+          const words = input.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+          counter.textContent = words + ' từ';
+        } else {
+          const length = input.value.length;
+          counter.textContent = length + '/' + maxChars;
+          if (length > maxChars * 0.9) {
+            counter.style.color = '#f5576c';
+          } else {
+            counter.style.color = '#999';
+          }
+        }
+      }
+      
+      input.addEventListener('input', update);
+      update();
+    }
+
+    // Initialize counters
+    updateCounter('title', 'titleCounter', 100);
+    updateCounter('description', 'descCounter', 500);
+    updateCounter('content', 'contentCounter', 0, true);
+
+    // Form submission animation
+    const form = document.getElementById('editForm');
+    const buttons = form.querySelectorAll('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+      buttons.forEach(btn => {
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fas fa-spinner"></i> Đang xử lý...';
+      });
+    });
+
+    // Auto-save draft (optional)
+    let autoSaveTimer;
+    const formInputs = form.querySelectorAll('input, textarea');
+    
+    formInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+          console.log('Auto-saving draft...');
+          // You can implement auto-save functionality here
+        }, 3000);
+      });
+    });
+  </script>
+</div>

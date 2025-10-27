@@ -1,0 +1,52 @@
+{
+  "name": "hat-de-chill",
+  "version": "1.0.0",
+  "description": "Web đọc sách trực tuyến Hạt Dẻ Chill - xây dựng bằng Node.js, Express và MongoDB (MVC Architecture).",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "keywords": [
+    "express",
+    "nodejs",
+    "mongodb",
+    "reading",
+    "ebook",
+    "mvc",
+    "hatdechill"
+  ],
+  "author": "Dương Dương",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "axios-retry": "^4.5.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.1.2",
+    "connect-flash": "^0.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.2",
+    "flash": "^1.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.8.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.9",
+    "path": "^0.12.7",
+    "pdf-parse": "^2.2.8"
+  },
+  "devDependencies": {
+    "eslint": "^9.10.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4"
+  }
+}

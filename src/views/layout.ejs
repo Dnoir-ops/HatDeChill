@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Đọc Sách Trực Tuyến</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==== Nâng cấp Navbar ==== */
+      .navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.3rem;
+        letter-spacing: 0.5px;
+        color: #fff !important;
+        transition: 0.3s;
+      }
+
+      .navbar-brand:hover {
+        color: #d3cdb5 !important;
+        text-shadow: 0 0 10px rgba(230, 224, 202, 0.6);
+      }
+
+      .navbar-nav .nav-link {
+        color: #f5f5f5 !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+        padding: 8px 15px;
+      }
+
+      .navbar-nav .nav-link:hover,
+      .navbar-nav .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff !important;
+        transform: translateY(-1px);
+      }
+
+      .navbar-nav .nav-link i {
+        margin-right: 6px;
+        color: #ffd700;
+      }
+
+      .user-dropdown .dropdown-toggle {
+        font-weight: 500;
+        color: #fff !important;
+        transition: 0.3s;
+      }
+
+      .user-dropdown .dropdown-toggle:hover {
+        color: #ffdd57 !important;
+      }
+
+      .user-dropdown .dropdown-menu {
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+
+      .dropdown-item.text-danger:hover {
+        background: #ffe6e6;
+        color: #dc3545 !important;
+      }
+
+      .navbar-nav:last-child {
+        margin-left: auto;
+      }
+      .user-dropdown .dropdown-toggle {
+        color: #fff;
+        text-decoration: none;
+      }
+      .user-dropdown .dropdown-menu {
+        right: 0;
+        left: auto;
+      }
+      /* Fix cho flash messages không overlap với main */
+      .alert-container {
+        position: relative;
+        z-index: 10;
+      }
+
+      /* ===== OVERLAY QUẢNG CÁO ===== */
+      .ad-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .ad-overlay.hidden {
+        display: none;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      .ad-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 50px 40px;
+        border-radius: 20px;
+        max-width: 700px;
+        width: 90%;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.4s ease-out;
+        text-align: center;
+        color: white;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* THÊM VÀO TRONG <style> TAG */
+
+      /* ==== Navbar Sticky & Bự ==== */
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 8px 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem !important;
+        letter-spacing: 0.5px;
+        color: #fff !important;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .navbar-brand::before {
+        content: "";
+        display: inline-block;
+        width: 70px;
+        height: 55px;
+        background: url("/uploads/logo.png") center/contain no-repeat; /* ← Đổi thành tuyệt đối */
+        margin-right: 12px;
+        animation: bobble 2.5s ease-in-out infinite;
+      }
+
+      .navbar-brand::before {
+        content: "";
+        display: inline-block;
+        width: 70px;
+        height: 55px;
+        background: url("../uploads/logo.png") center/contain no-repeat;
+        margin-right: 12px;
+        animation: bobble 2.5s ease-in-out infinite;
+      }
+
+      @keyframes bobble {
+        0%,
+        100% {
+          transform: translateY(0px) scale(1);
+        }
+        50% {
+          transform: translateY(-6px) scale(1.02);
+        }
+      }
+
+      .navbar-nav .nav-link {
+        color: #f5f5f5 !important;
+        font-weight: 600;
+        font-size: 1.05rem;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        padding: 12px 20px !important;
+        margin: 0 8px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .navbar-nav .nav-link i {
+        font-size: 1.2rem;
+      }
+
+      .navbar-nav .nav-link:hover,
+      .navbar-nav .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff !important;
+        transform: translateY(-2px);
+      }
+
+      .navbar-nav .nav-link i {
+        color: #ffd700;
+      }
+
+      .user-dropdown .dropdown-toggle {
+        font-weight: 600;
+        color: #fff !important;
+        transition: all 0.3s;
+        padding: 12px 20px !important;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .user-dropdown .dropdown-toggle i {
+        font-size: 1.2rem;
+        color: #ffd700;
+      }
+
+      .user-dropdown .dropdown-toggle:hover {
+        color: #ffdd57 !important;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .user-dropdown .dropdown-menu {
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin-top: 8px;
+      }
+
+      .dropdown-item.text-danger:hover {
+        background: #ffe6e6;
+        color: #dc3545 !important;
+      }
+
+      .navbar-nav:last-child {
+        margin-left: auto;
+      }
+
+      .user-dropdown .dropdown-toggle {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .user-dropdown .dropdown-menu {
+        right: 0;
+        left: auto;
+      }
+
+      /* Main Content có khoảng cách tốt */
+      main {
+        margin-top: 30px !important;
+        padding: 0 15px;
+      }
+
+      /* Alert Messages */
+      .alert-container {
+        position: relative;
+        z-index: 10;
+      }
+
+      .alert {
+        margin-top: 20px;
+        border-radius: 12px;
+        font-size: 1rem;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      }
+
+      .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: 50px;
+        padding: 25px 0 !important;
+        background: #f8f9fa !important;
+        border-top: 1px solid #dee2e6;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 28px;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        line-height: 1;
+        font-weight: 300;
+      }
+
+      .close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+      }
+
+      .ad-content h2 {
+        font-size: 32px;
+        margin-bottom: 25px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        font-weight: bold;
+      }
+
+      .ad-content p {
+        font-size: 18px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      /* Khung chứa logo - hình chữ nhật */
+      .ad-logo {
+        width: 100%;
+        max-width: 248px;
+        height: 250px;
+        margin: 25px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .ad-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      /* Placeholder khi chưa có logo */
+      .ad-logo-placeholder {
+        font-size: 64px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .ad-cta {
+        background: white;
+        color: #667eea;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 20px;
+      }
+
+      .ad-cta:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+      }
+
+      .ad-features {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .ad-feature {
+        font-size: 16px;
+      }
+
+      .ad-feature i {
+        margin-right: 8px;
+        color: #ffd700;
+      }
+
+      /* ===== LOGIN MODAL STYLES ===== */
+      .modal-content {
+        border: none !important;
+        border-radius: 20px !important;
+      }
+
+      .modal-dialog-centered .modal-content {
+        height: auto;
+      }
+
+      .login-modal-left {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        border-radius: 20px 0 0 20px;
+      }
+
+      .login-modal-left h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 20px;
+      }
+
+      .login-modal-left p {
+        font-size: 15px;
+        line-height: 1.6;
+        opacity: 0.95;
+        margin-bottom: 30px;
+      }
+
+      .login-modal-qr {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+      }
+
+      .login-modal-qr-code {
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 12px;
+      }
+
+      .login-modal-qr-code img {
+        width: 120px;
+        height: 120px;
+        display: block;
+      }
+
+      .login-modal-qr-text {
+        font-size: 12px;
+        opacity: 0.9;
+        color: white;
+      }
+
+      .login-modal-right {
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .login-modal-right h4 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .login-modal-subtitle {
+        color: #999;
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+
+      .login-modal-form .form-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .login-modal-form .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background: #f8f9fa;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+      }
+
+      .login-modal-form .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: white;
+        outline: none;
+      }
+
+      .login-modal-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 11px;
+        border: none;
+        margin-top: 10px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .login-modal-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .login-modal-forgot {
+        text-align: right;
+        margin-top: 15px;
+      }
+
+      .login-modal-forgot a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .login-modal-forgot a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .login-modal-divider {
+        margin: 20px 0;
+        text-align: center;
+        color: #ddd;
+        font-size: 12px;
+      }
+
+      .login-modal-signup {
+        text-align: center;
+        font-size: 13px;
+        color: #666;
+      }
+
+      .login-modal-signup a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .login-modal-signup a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .login-modal-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        .login-modal-left {
+          border-radius: 20px 20px 0 0;
+          padding: 40px 30px;
+          order: 2;
+        }
+
+        .login-modal-right {
+          border-radius: 0 0 20px 20px;
+          padding: 40px 30px;
+          order: 1;
+        }
+
+        .modal-dialog {
+          margin: 10px !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- ===== OVERLAY QUẢNG CÁO ===== -->
+    <% if (typeof currentPath !== 'undefined' && currentPath === '/') { %>
+    <div class="ad-overlay" id="adOverlay">
+      <div class="ad-content">
+        <button class="close-btn" onclick="closeAd()" aria-label="Đóng">
+          x
+        </button>
+        <h2>🎉 Chào Mừng Đến Với Hạt Dẻ Chill!</h2>
+
+        <div class="ad-logo">
+          <img src="../uploads/logo.png" alt="Logo" />
+        </div>
+
+        <p style="font-size: 20px; font-weight: 600">
+          Khám phá hàng ngàn đầu sách hay - Đọc không giới hạn!
+        </p>
+
+        <div class="ad-features">
+          <div class="ad-feature">
+            <i class="fas fa-check-circle"></i>
+            Miễn phí đăng ký
+          </div>
+          <div class="ad-feature">
+            <i class="fas fa-check-circle"></i>
+            Kho sách phong phú
+          </div>
+          <div class="ad-feature">
+            <i class="fas fa-check-circle"></i>
+            Đọc mọi lúc mọi nơi
+          </div>
+        </div>
+
+        <button class="ad-cta" onclick="closeAd()">
+          Bắt Đầu Khám Phá <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- ===== NAVBAR BOOTSTRAP ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <!-- Navbar Brand -->
+        <a class="navbar-brand" href="/"> HẠT DẺ CHILL </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/books"> <i>📚</i> Sách </a>
+            </li>
+
+            <% if (user && (user.role === 'reader' || user.role === 'author' ||
+            user.role === 'admin')) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/favorites"> <i>❤️</i> Yêu Thích </a>
+            </li>
+
+            <% } %> <% if (user && (user.role === 'author' || user.role ===
+            'admin')) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/books/upload">
+                <i>📤</i> Upload Sách
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/books/archive">
+                <i>📁</i> Kho lưu trữ
+              </a>
+            </li>
+            <% } %> <% if (user && user.role === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link text-warning" href="/admin">
+                <i>⚙️</i> Quản Trị
+              </a>
+            </li>
+            <% } %>
+          </ul>
+
+          <ul class="navbar-nav">
+            <% if (user) { %>
+            <!-- Đã đăng nhập: Dropdown chào + Đăng xuất -->
+            <li class="nav-item dropdown user-dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fas fa-user"></i> Xin chào, <%= user.name ||
+                user.email %>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/users/profile">
+                    <i class="fas fa-user-edit"></i> Hồ Sơ
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <form
+                    action="/api/auth/logout"
+                    method="POST"
+                    style="display: inline; margin: 0"
+                  >
+                    <button
+                      type="submit"
+                      class="dropdown-item text-danger border-0 bg-transparent w-100 text-start"
+                    >
+                      <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+            <% } else { %>
+            <!-- Chưa đăng nhập -->
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+              >
+                <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/register">
+                <i class="fas fa-user-plus"></i> Đăng Ký
+              </a>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+   
+
+    <main class="flex-grow-1 container mt-4"><%- body %></main>
+
+    <footer class="footer mt-auto py-3 bg-light text-center">
+      <span class="text-muted"
+        >&copy; 2025 Hạt Dẻ Chill - Web Đọc Sách Trực Tuyến</span
+      >
+    </footer>
+
+    <!-- ===== LOGIN MODAL ===== -->
+    <div
+      class="modal fade"
+      id="loginModal"
+      tabindex="-1"
+      aria-labelledby="loginModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div
+            class="login-modal-grid"
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0;
+              height: 100%;
+            "
+          >
+            <!-- Left Side -->
+            <div class="login-modal-left">
+              <h3>📚 Hạt Dẻ Chill</h3>
+              <p>Khám phá hàng ngàn đầu sách hay - Đọc không giới hạn!</p>
+
+              <div class="login-modal-qr">
+                <div class="login-modal-qr-code">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://localhost:3000/uploads/sach.jpg"
+                    alt="QR Code"
+                  />
+                </div>
+                <p class="login-modal-qr-text">📱 Quét mã để đăng nhập</p>
+              </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="login-modal-right">
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                style="align-self: flex-end; margin-bottom: 20px"
+              ></button>
+
+              <h4>Đăng nhập</h4>
+              <p class="login-modal-subtitle">Chào mừng bạn quay lại</p>
+
+              <form
+                method="POST"
+                action="/users/login"
+                class="login-modal-form"
+              >
+                <div class="mb-3">
+                  <label for="modalEmail" class="form-label">
+                    <i class="fas fa-envelope"></i> Email
+                  </label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="modalEmail"
+                    name="email"
+                    placeholder="Nhập email"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="modalPassword" class="form-label">
+                    <i class="fas fa-lock"></i> Mật khẩu
+                  </label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="modalPassword"
+                    name="password"
+                    placeholder="Nhập mật khẩu"
+                    required
+                  />
+                </div>
+
+                <button type="submit" class="login-modal-btn">
+                  <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+              </form>
+
+              <div class="login-modal-forgot">
+                <a href="/users/forgot-password">
+                  <i class="fas fa-question-circle"></i> Quên mật khẩu?
+                </a>
+              </div>
+
+              <div class="login-modal-divider">────── hoặc ──────</div>
+
+              <div class="login-modal-signup">
+                Chưa có tài khoản? <a href="/users/register">Đăng ký ngay</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script cho Overlay Quảng Cáo -->
+    <script>
+      function closeAd() {
+        const overlay = document.getElementById("adOverlay");
+        overlay.style.animation = "fadeOut 0.3s ease-out";
+        setTimeout(() => {
+          overlay.classList.add("hidden");
+        }, 300);
+      }
+
+      // Click vào nền mờ cũng đóng popup
+      const adOverlay = document.getElementById("adOverlay");
+      if (adOverlay) {
+        adOverlay.addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeAd();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

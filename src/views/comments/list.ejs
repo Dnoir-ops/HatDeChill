@@ -1,0 +1,47 @@
+
+
+<div class="container mt-4">
+  <h2 class="mb-4">📚 Danh sách sách</h2>
+
+  <div id="book-list" class="row">
+    <p>Đang tải dữ liệu...</p>
+  </div>
+</div>
+
+<script>
+  async function loadBooks() {
+    try {
+      const res = await fetch('/api/books');
+      if (!res.ok) throw new Error('Không thể tải sách');
+      const books = await res.json();
+
+      const container = document.getElementById('book-list');
+      if (!books || books.length === 0) {
+        container.innerHTML = '<p>Không có sách nào trong hệ thống.</p>';
+        return;
+      }
+
+      container.innerHTML = books.map(book => `
+        <div class="col-md-3 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">${book.title}</h5>
+              <p class="card-text">Tác giả: ${book.author || 'Chưa rõ'}</p>
+              <p class="card-text"><small>Thể loại: ${book.category || 'Không có'}</small></p>
+              <a href="/books/${book._id}" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+              <a href="/api/books/${book._id}/download" class="btn btn-primary btn-sm mt-2">📥 Tải xuống</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error(err);
+      document.getElementById('book-list').innerHTML =
+        '<p class="text-danger">Lỗi tải danh sách sách!</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadBooks);
+</script>
+
+

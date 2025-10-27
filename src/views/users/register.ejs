@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - Web Đọc Sách Trực Tuyến</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .login-container {
+        width: 100%;
+        max-width: 900px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .login-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+
+      .login-left {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+      }
+
+      .login-left h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 20px;
+      }
+
+      .login-left p {
+        font-size: 16px;
+        line-height: 1.6;
+        opacity: 0.9;
+        margin-bottom: 30px;
+      }
+
+      .qr-code {
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+      }
+
+      .qr-code img {
+        width: 150px;
+        height: 150px;
+      }
+
+      .qr-text {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .login-right {
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-height: 666px;
+        overflow-y: auto;
+      }
+
+      .login-right h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+        padding-top: 60px;
+      }
+
+      .login-subtitle {
+        color: #999;
+        margin-bottom: 40px;
+        font-size: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 14px;
+      }
+
+      .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+      }
+
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: white;
+        outline: none;
+      }
+
+      .form-control::placeholder {
+        color: #999;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s ease;
+        background: none;
+        border: none;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .toggle-password:hover {
+        color: #667eea;
+      }
+
+      .toggle-password svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .password-strength {
+        margin-top: 8px;
+        font-size: 12px;
+      }
+
+      .strength-bar {
+        height: 4px;
+        background-color: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+
+      .strength-fill {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+      }
+
+      .strength-fill.weak {
+        width: 33%;
+        background-color: #ff6b6b;
+      }
+
+      .strength-fill.medium {
+        width: 66%;
+        background-color: #ffd93d;
+      }
+
+      .strength-fill.strong {
+        width: 100%;
+        background-color: #6bcf7f;
+      }
+
+      .strength-text {
+        color: #999;
+        font-size: 12px;
+      }
+
+      .strength-text.weak {
+        color: #ff6b6b;
+        font-weight: 600;
+      }
+
+      .strength-text.medium {
+        color: #ffd93d;
+        font-weight: 600;
+      }
+
+      .strength-text.strong {
+        color: #6bcf7f;
+        font-weight: 600;
+      }
+
+      .password-requirements {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .requirement {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .requirement:last-child {
+        margin-bottom: 0;
+      }
+
+      .requirement-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 10px;
+        color: white;
+        flex-shrink: 0;
+        background-color: #e0e0e0;
+      }
+
+      .requirement.active .requirement-icon {
+        background-color: #6bcf7f;
+      }
+
+      .alert {
+        border-radius: 10px;
+        border: none;
+        margin-bottom: 20px;
+        padding: 12px 15px;
+        font-size: 14px;
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-danger {
+        background: #fee;
+        color: #c33;
+        border-left: 4px solid #c33;
+      }
+
+      .alert-success {
+        background: #efe;
+        color: #3c3;
+        border-left: 4px solid #3c3;
+      }
+
+      .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-login:active {
+        transform: translateY(0);
+      }
+
+      .divider {
+        margin: 15px 0 10px 0;
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+      }
+
+      .signup-link {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .signup-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .signup-link a:hover {
+        color: #764ba2;
+      }
+
+      .modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-backdrop.show {
+        display: flex;
+      }
+
+      .modal-content-box {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        padding: 40px;
+        position: relative;
+        animation: modalSlide 0.3s ease;
+      }
+
+      @keyframes modalSlide {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s;
+      }
+
+      .modal-close:hover {
+        color: #333;
+      }
+
+      .modal-content-box h2 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .modal-content-box .login-subtitle {
+        margin-bottom: 30px;
+      }
+
+      @media (max-width: 768px) {
+        .login-wrapper {
+          grid-template-columns: 1fr;
+        }
+
+        .login-left {
+          padding: 40px 30px;
+        }
+
+        .login-right {
+          padding: 40px 30px;
+        }
+
+        .login-left h1 {
+          font-size: 24px;
+        }
+
+        .qr-code img {
+          width: 120px;
+          height: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-wrapper">
+        <!-- Left Side -->
+        <div class="login-left">
+          <h1>📚 Hạt Dẻ Chill</h1>
+          <p>Khám phá hàng triệu cuốn sách điện tử chất lượng cao</p>
+          <div class="qr-code">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://localhost:3000/users/register"
+              alt="QR Code"
+            />
+          </div>
+          <p class="qr-text">📱 Quét mã để đăng ký</p>
+        </div>
+
+        <!-- Right Side -->
+        <div class="login-right">
+          <h2>Đăng ký</h2>
+          <p class="login-subtitle">Tạo tài khoản mới của bạn</p>
+
+          <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+          <div class="alert alert-danger">
+            <strong>❌ Lỗi:</strong> <%= error[0] %>
+          </div>
+          <% } %> <% if (typeof success !== 'undefined' && success &&
+          success.length > 0) { %>
+          <div class="alert alert-success">
+            <strong>✓ Thành công:</strong> <%= success[0] %>
+          </div>
+          <% } %>
+
+          <form method="POST" action="/users/register">
+            <div class="form-group">
+              <label for="name">Tên</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="Nhập tên của bạn"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Nhập email của bạn"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Mật khẩu</label>
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="Nhập mật khẩu"
+                  required
+                  onchange="checkPasswordStrength(this.value)"
+                  oninput="checkPasswordStrength(this.value)"
+                  style="padding-right: 40px"
+                />
+                <button
+                  type="button"
+                  class="toggle-password"
+                  onclick="togglePasswordVisibility()"
+                >
+                  <svg
+                    id="eyeIcon"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="password-strength">
+                <div class="strength-bar">
+                  <div id="strengthFill" class="strength-fill"></div>
+                </div>
+                <div id="strengthText" class="strength-text">
+                  Nhập mật khẩu để xem độ mạnh
+                </div>
+              </div>
+
+              <div class="password-requirements">
+                <div id="req1" class="requirement">
+                  <span class="requirement-icon">✓</span>
+                  <span>Ít nhất 6 ký tự</span>
+                </div>
+                <div id="req2" class="requirement">
+                  <span class="requirement-icon">✓</span>
+                  <span>Chữ hoa (A-Z)</span>
+                </div>
+                <div id="req3" class="requirement">
+                  <span class="requirement-icon">✓</span>
+                  <span>Chữ thường (a-z)</span>
+                </div>
+                <div id="req4" class="requirement">
+                  <span class="requirement-icon">✓</span>
+                  <span>Số (0-9)</span>
+                </div>
+                <div id="req5" class="requirement">
+                  <span class="requirement-icon">✓</span>
+                  <span>Ký tự đặc biệt (!@#$%^&*)</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-login">Đăng ký</button>
+          </form>
+
+          <div class="divider">hoặc</div>
+
+          <div class="signup-link">
+            Đã có tài khoản? <a href="/users/login">Đăng nhập ngay</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function togglePasswordVisibility() {
+        const input = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (input.type === "password") {
+          input.type = "text";
+          eyeIcon.innerHTML =
+            '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+        } else {
+          input.type = "password";
+          eyeIcon.innerHTML =
+            '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        }
+      }
+
+      function checkPasswordStrength(password) {
+        const req1 = password.length >= 6;
+        const req2 = /[A-Z]/.test(password);
+        const req3 = /[a-z]/.test(password);
+        const req4 = /[0-9]/.test(password);
+        const req5 = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+        document.getElementById("req1").classList.toggle("active", req1);
+        document.getElementById("req2").classList.toggle("active", req2);
+        document.getElementById("req3").classList.toggle("active", req3);
+        document.getElementById("req4").classList.toggle("active", req4);
+        document.getElementById("req5").classList.toggle("active", req5);
+
+        const metRequirements = [req1, req2, req3, req4, req5].filter(
+          Boolean
+        ).length;
+        const strengthFill = document.getElementById("strengthFill");
+        const strengthText = document.getElementById("strengthText");
+
+        strengthFill.className = "strength-fill";
+        strengthText.className = "strength-text";
+
+        if (password.length === 0) {
+          strengthFill.className = "strength-fill";
+          strengthText.textContent = "Nhập mật khẩu để xem độ mạnh";
+          strengthText.className = "strength-text";
+        } else if (metRequirements <= 2) {
+          strengthFill.classList.add("weak");
+          strengthText.classList.add("weak");
+          strengthText.textContent = "Mật khẩu yếu";
+        } else if (metRequirements <= 4) {
+          strengthFill.classList.add("medium");
+          strengthText.classList.add("medium");
+          strengthText.textContent = "Mật khẩu vừa";
+        } else {
+          strengthFill.classList.add("strong");
+          strengthText.classList.add("strong");
+          strengthText.textContent = "Mật khẩu mạnh";
+        }
+      }
+    </script>
+  </body>
+</html>

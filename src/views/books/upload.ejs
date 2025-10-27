@@ -1,0 +1,962 @@
+<div class="container mt-4" style="max-width: 700px;">
+  <style>
+    /* ==== UPLOAD PAGE ULTIMATE ==== */
+    .upload-page-wrapper {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ==== HEADER SECTION ==== */
+    .upload-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 50px 40px;
+      border-radius: 25px;
+      margin-bottom: 35px;
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .upload-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      animation: rotate 8s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .upload-header h2 {
+      color: white;
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .upload-header-icon {
+      font-size: 3rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .upload-header p {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 1.2rem;
+      margin-top: 15px;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    /* ==== FORM CARD ==== */
+    .upload-form-card {
+      background: white;
+      padding: 50px 45px;
+      border-radius: 25px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    /* ==== FORM GROUPS ==== */
+    .form-group {
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .form-group label {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group label i {
+      color: #667eea;
+      font-size: 1.3rem;
+    }
+
+    .form-control {
+      border: 2px solid #e0e0e0;
+      border-radius: 15px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      background: white;
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+      font-family: inherit;
+      line-height: 1.6;
+    }
+
+    /* ==== CUSTOM CATEGORY SELECTOR ==== */
+    .category-dropdown {
+      position: relative;
+    }
+
+    .category-toggle {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 15px;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+    }
+
+    .category-toggle:hover {
+      border-color: #667eea;
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .category-toggle.active {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      background: white;
+    }
+
+    .category-toggle-text {
+      color: #666;
+      flex: 1;
+    }
+
+    .category-toggle-text.has-selection {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .category-toggle-icon {
+      color: #667eea;
+      font-size: 1.2rem;
+      transition: transform 0.3s;
+    }
+
+    .category-toggle.active .category-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .category-options {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #667eea;
+      border-radius: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: none;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .category-options.show {
+      display: block;
+    }
+
+    .category-options::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .category-options::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px;
+    }
+
+    .category-option {
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .category-option:last-child {
+      border-bottom: none;
+    }
+
+    .category-option:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    }
+
+    .category-option.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+    }
+
+    .category-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .category-option.selected .category-checkbox {
+      background: white;
+      border-color: white;
+    }
+
+    .category-checkbox i {
+      display: none;
+      color: #667eea;
+      font-size: 0.8rem;
+    }
+
+    .category-option.selected .category-checkbox i {
+      display: block;
+    }
+
+    .category-helper {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-helper i {
+      font-size: 1.2rem;
+      color: #ffd700;
+    }
+
+    .selected-categories {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .category-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .category-badge-remove {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .category-badge-remove:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    /* Hidden select for form submission */
+    #category {
+      display: none;
+    }
+
+    /* ==== FILE INPUT CUSTOM ==== */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 40px 20px;
+      border: 3px dashed #667eea;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .file-input-label:hover {
+      border-color: #764ba2;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+
+    .file-input-icon {
+      font-size: 3rem;
+      color: #667eea;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .file-input-text {
+      flex: 1;
+    }
+
+    .file-input-text strong {
+      display: block;
+      font-size: 1.2rem;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .file-input-text small {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .file-selected {
+      margin-top: 15px;
+      padding: 15px 20px;
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .file-selected i {
+      font-size: 1.5rem;
+    }
+
+    .file-selected.show {
+      display: flex;
+    }
+
+    /* ==== SUBMIT BUTTON ULTIMATE ==== */
+    .btn-upload {
+      width: 100%;
+      padding: 18px 40px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      border-radius: 50px;
+      border: none;
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+      margin-top: 30px;
+    }
+
+    .btn-upload::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-upload:hover::before {
+      width: 500px;
+      height: 500px;
+    }
+
+    .btn-upload:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 45px rgba(17, 153, 142, 0.5);
+    }
+
+    .btn-upload i {
+      margin-left: 10px;
+      font-size: 1.4rem;
+      transition: transform 0.3s;
+    }
+
+    .btn-upload:hover i {
+      transform: translateX(5px);
+    }
+
+    /* Loading state */
+    .btn-upload.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .btn-upload.loading::after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      top: 50%;
+      right: 30px;
+      margin-top: -12px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spinner 0.6s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ==== TIPS SECTION ==== */
+    .upload-tips {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 30px;
+      border-radius: 20px;
+      color: white;
+      box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+      margin-bottom: 30px;
+    }
+
+    .upload-tips h4 {
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+    }
+
+    .upload-tips ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .upload-tips li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .upload-tips li:last-child {
+      border-bottom: none;
+    }
+
+    .upload-tips li i {
+      color: #ffd700;
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+
+    /* ==== RESPONSIVE ==== */
+    @media (max-width: 768px) {
+      .upload-header {
+        padding: 35px 25px;
+      }
+
+      .upload-header h2 {
+        font-size: 2rem;
+        flex-direction: column;
+      }
+
+      .upload-form-card {
+        padding: 30px 25px;
+      }
+
+      .btn-upload {
+        padding: 16px 30px;
+        font-size: 1.1rem;
+      }
+
+      .file-input-label {
+        flex-direction: column;
+        padding: 30px 15px;
+      }
+    }
+  </style>
+
+  <div class="upload-page-wrapper">
+    <!-- Header -->
+    <div class="upload-header">
+      <h2>
+        <span class="upload-header-icon">📤</span>
+        Upload sách mới
+      </h2>
+      <p>Chia sẻ tác phẩm của bạn với cộng đồng</p>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="upload-tips">
+      <h4>
+        <i class="fas fa-lightbulb"></i>
+        Hướng dẫn upload
+      </h4>
+      <ul>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Chỉ upload sách bạn có quyền hoặc sách không vi phạm bản quyền</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Định dạng hỗ trợ: PDF, EPUB, TXT (tối đa 50MB)</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Viết mô tả chi tiết để độc giả hiểu rõ về nội dung sách</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Approval Notice -->
+    <div style="background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); padding: 25px 30px; border-radius: 20px; margin-bottom: 30px; color: white; box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);">
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+        <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: #ffd700;"></i>
+        <div>
+          <h4 style="margin: 0; font-weight: 800; font-size: 1.3rem;">⚠️ Lưu ý quan trọng</h4>
+          <p style="margin: 5px 0 0 0; font-size: 0.95rem; opacity: 0.95;">Quy trình kiểm duyệt nội dung</p>
+        </div>
+      </div>
+      <div style="background: rgba(255, 255, 255, 0.15); padding: 15px 20px; border-radius: 12px; border-left: 4px solid #ffd700;">
+        <p style="margin: 0; font-weight: 600; line-height: 1.6;">
+          📋 Sau khi upload, sách của bạn sẽ được gửi đến <strong>Admin</strong> để kiểm duyệt.<br>
+          ⏳ Sách sẽ ở trạng thái <strong>"Chờ duyệt"</strong> và chỉ hiển thị công khai khi Admin phê duyệt.<br>
+          ✅ Thời gian duyệt: 24-48 giờ làm việc.
+        </p>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="upload-form-card">
+      <form method="POST" action="/books/upload" enctype="multipart/form-data" id="uploadForm">
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title">
+            <i class="fas fa-heading"></i>
+            Tên sách
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="title" 
+            name="title" 
+            placeholder="VD: Harry Potter và Hòn đá Phù thủy"
+            required
+          >
+        </div>
+
+        <!-- Author -->
+        <div class="form-group">
+          <label for="author">
+            <i class="fas fa-user-edit"></i>
+            Tác giả
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="author" 
+            name="author" 
+            placeholder="VD: J.K. Rowling"
+            required
+          >
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="category">
+            <i class="fas fa-tags"></i>
+            Thể loại (Chọn nhiều)
+          </label>
+          
+          <!-- Custom Category Dropdown -->
+          <div class="category-dropdown">
+            <div class="category-toggle" id="categoryToggle">
+              <span class="category-toggle-text">Chọn thể loại sách...</span>
+              <i class="fas fa-chevron-down category-toggle-icon"></i>
+            </div>
+            
+            <div class="category-options" id="categoryOptions">
+              <% 
+                const defaultCategories = [ 
+                  "Romance",
+                  "Mystery/Detective",
+                  "Fantasy/Science Fiction",
+                  "Thrillers/Horror",
+                  "Self-help/Inspirational",
+                  "Biography, Autobiography & Memoir",
+                  "Business & Finance",
+                  "Children's & Young Adult - YA",
+                  "Science, Education & History",
+                  "Classics",
+                  'Handwritten Books'
+                ];
+                const categoryList = (typeof categories !== 'undefined' && categories && categories.length > 0) ? categories : defaultCategories;
+              %>
+              <% categoryList.forEach(cat => { %>
+                <div class="category-option" data-value="<%= cat %>">
+                  <div class="category-checkbox">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <span><%= cat %></span>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Hidden Select for Form Submission -->
+          <select class="form-control" id="category" name="category" multiple required style="display: none;">
+            <% categoryList.forEach(cat => { %>
+              <option value="<%= cat %>"><%= cat %></option>
+            <% }) %>
+          </select>
+
+          <!-- Selected Categories Display -->
+          <div class="selected-categories" id="selectedCategories"></div>
+
+          <div class="category-helper">
+            <i class="fas fa-info-circle"></i>
+            <span>Click để chọn/bỏ chọn thể loại. Có thể chọn nhiều thể loại cho sách</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description">
+            <i class="fas fa-align-left"></i>
+            Mô tả
+          </label>
+          <textarea 
+            class="form-control" 
+            id="description" 
+            name="description"
+            placeholder="Viết một đoạn mô tả hấp dẫn về nội dung sách..."
+          ></textarea>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label for="file">
+            <i class="fas fa-file-upload"></i>
+            File sách (PDF, EPUB, TXT)
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control-file" 
+              id="file" 
+              name="file" 
+              accept=".pdf,.epub,.txt"
+              required
+            >
+            <label for="file" class="file-input-label">
+              <div class="file-input-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="file-input-text">
+                <strong>Kéo thả file hoặc click để chọn</strong>
+                <small>PDF, EPUB, TXT (Tối đa 50MB)</small>
+              </div>
+            </label>
+          </div>
+          <div class="file-selected" id="fileSelected">
+            <i class="fas fa-check-circle"></i>
+            <span id="fileName">File đã chọn</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-upload">
+          <i class="fas fa-paper-plane"></i>
+          Gửi sách chờ duyệt
+          <i class="fas fa-arrow-right"></i>
+        </button>
+        
+        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 0.95rem;">
+          <i class="fas fa-info-circle"></i> 
+          <span>Sách sẽ được gửi đến Admin để kiểm duyệt trước khi công khai</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Category Dropdown Handler
+    const categoryToggle = document.getElementById('categoryToggle');
+    const categoryOptions = document.getElementById('categoryOptions');
+    const categorySelect = document.getElementById('category');
+    const selectedCategoriesDiv = document.getElementById('selectedCategories');
+    const categoryToggleText = categoryToggle.querySelector('.category-toggle-text');
+    let selectedCategories = [];
+
+    // Toggle dropdown
+    categoryToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      categoryToggle.classList.toggle('active');
+      categoryOptions.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!categoryToggle.contains(e.target) && !categoryOptions.contains(e.target)) {
+        categoryToggle.classList.remove('active');
+        categoryOptions.classList.remove('show');
+      }
+    });
+
+    // Handle category selection
+    document.querySelectorAll('.category-option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const value = this.dataset.value;
+        
+        if (this.classList.contains('selected')) {
+          // Deselect
+          this.classList.remove('selected');
+          selectedCategories = selectedCategories.filter(cat => cat !== value);
+          
+          // Deselect in hidden select
+          Array.from(categorySelect.options).forEach(opt => {
+            if (opt.value === value) opt.selected = false;
+          });
+        } else {
+          // Select
+          this.classList.add('selected');
+          selectedCategories.push(value);
+          
+          // Select in hidden select
+          Array.from(categorySelect.options).forEach(opt => {
+            if (opt.value === value) opt.selected = true;
+          });
+        }
+        
+        updateDisplay();
+      });
+    });
+
+    function updateDisplay() {
+      // Update toggle text
+      if (selectedCategories.length === 0) {
+        categoryToggleText.textContent = 'Chọn thể loại sách...';
+        categoryToggleText.classList.remove('has-selection');
+      } else {
+        categoryToggleText.textContent = `Đã chọn ${selectedCategories.length} thể loại`;
+        categoryToggleText.classList.add('has-selection');
+      }
+
+      // Update badges
+      selectedCategoriesDiv.innerHTML = '';
+      selectedCategories.forEach(cat => {
+        const badge = document.createElement('div');
+        badge.className = 'category-badge';
+        badge.innerHTML = `
+          <span>${cat}</span>
+          <div class="category-badge-remove" data-value="${cat}">
+            <i class="fas fa-times" style="font-size: 0.7rem;"></i>
+          </div>
+        `;
+        
+        // Add remove handler
+        badge.querySelector('.category-badge-remove').addEventListener('click', function(e) {
+          e.stopPropagation();
+          const valueToRemove = this.dataset.value;
+          
+          // Remove from selected array
+          selectedCategories = selectedCategories.filter(cat => cat !== valueToRemove);
+          
+          // Deselect in UI
+          document.querySelectorAll('.category-option').forEach(opt => {
+            if (opt.dataset.value === valueToRemove) {
+              opt.classList.remove('selected');
+            }
+          });
+          
+          // Deselect in hidden select
+          Array.from(categorySelect.options).forEach(opt => {
+            if (opt.value === valueToRemove) opt.selected = false;
+          });
+          
+          updateDisplay();
+        });
+        
+        selectedCategoriesDiv.appendChild(badge);
+      });
+    }
+
+    // File input handler
+    const fileInput = document.getElementById('file');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileName = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+        fileName.textContent = `${file.name} (${fileSize} MB)`;
+        fileSelected.classList.add('show');
+      } else {
+        fileSelected.classList.remove('show');
+      }
+    });
+
+    // Form submission
+    const form = document.getElementById('uploadForm');
+    const submitBtn = form.querySelector('.btn-upload');
+
+    form.addEventListener('submit', function(e) {
+      // Validate category selection
+      if (selectedCategories.length === 0) {
+        e.preventDefault();
+        alert('Vui lòng chọn ít nhất một thể loại cho sách!');
+        categoryToggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        categoryToggle.style.borderColor = '#f5576c';
+        setTimeout(() => {
+          categoryToggle.style.borderColor = '#e0e0e0';
+        }, 2000);
+        return;
+      }
+
+      submitBtn.classList.add('loading');
+      submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Đang gửi đến Admin...';
+    });
+
+    // Drag and drop for file input
+    const fileLabel = document.querySelector('.file-input-label');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, () => {
+        fileLabel.style.borderColor = '#764ba2';
+        fileLabel.style.transform = 'scale(1.02)';
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, () => {
+        fileLabel.style.borderColor = '#667eea';
+        fileLabel.style.transform = 'scale(1)';
+      });
+    });
+
+    fileLabel.addEventListener('drop', function(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileInput.files = files;
+      
+      // Trigger change event
+      const event = new Event('change', { bubbles: true });
+      fileInput.dispatchEvent(event);
+    });
+  </script>
+</div>

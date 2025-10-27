@@ -1,0 +1,792 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="my-books-container">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-shape shape-4"></div>
+  </div>
+
+  <div class="container mt-4">
+    <!-- Header Section -->
+    <div class="page-header-section">
+      <div class="header-content">
+        <div class="header-left">
+          <div class="icon-wrapper">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <div>
+            <h1 class="header-title">Kho Sách Của Bạn</h1>
+            <p class="header-subtitle">Quản lý và sáng tạo những câu chuyện của riêng bạn</p>
+          </div>
+        </div>
+        <a href="/books/write" class="btn-create-new">
+          <i class="fas fa-pen-fancy"></i>
+          <span>Viết Sách Mới</span>
+          <div class="btn-shine"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <% if (success && success.length > 0) { %>
+    <div class="alert-custom alert-success-custom">
+      <div class="alert-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="alert-content">
+        <strong>Thành công!</strong>
+        <p><%= success %></p>
+      </div>
+      <button class="alert-close" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <% } %>
+
+    <% if (error && error.length > 0) { %>
+    <div class="alert-custom alert-danger-custom">
+      <div class="alert-icon">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <div class="alert-content">
+        <strong>Lỗi!</strong>
+        <p><%= error %></p>
+      </div>
+      <button class="alert-close" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <% } %>
+
+    <!-- Books Grid -->
+    <% if (books && books.length > 0) { %>
+    <div class="books-grid">
+      <% books.forEach((book, index) => { %>
+        <div class="book-card" style="animation-delay: <%= index * 0.1 %>s">
+          <div class="book-card-inner">
+            <!-- Status Badge -->
+            <div class="status-badge <%= book.status === 'published' ? 'status-published' : 'status-draft' %>">
+              <i class="fas <%= book.status === 'published' ? 'fa-star' : 'fa-pen' %>"></i>
+              <span><%= book.status === 'published' ? 'Đã đăng' : 'Bản nháp' %></span>
+            </div>
+
+            <!-- Book Cover Placeholder -->
+            <div class="book-cover-section">
+              <div class="book-cover-placeholder">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="book-overlay">
+                <div class="overlay-icons">
+                  <% if (book.status === 'draft') { %>
+                    <a href="/books/edit/<%= book._id %>" class="overlay-icon" title="Tiếp tục viết">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                  <% } else { %>
+                    <a href="/books/<%= book._id %>" class="overlay-icon" title="Xem ">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Book Info -->
+            <div class="book-info-section">
+              <h3 class="book-title"><%= book.title %></h3>
+              
+              <div class="book-meta">
+                <div class="meta-item">
+                  <i class="fas fa-user"></i>
+                  <span><%= book.author || 'Chưa rõ' %></span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-tag"></i>
+                  <span><%= book.category || 'Không có thể loại' %></span>
+                </div>
+              </div>
+
+              <% if (book.description) { %>
+                <p class="book-description"><%= book.description.substring(0, 80) %>...</p>
+              <% } %>
+
+              <!-- Action Buttons -->
+              <div class="action-buttons">
+                <% if (book.status === 'draft') { %>
+                  <a href="/books/edit/<%= book._id %>" class="btn-action btn-edit">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Tiếp tục viết</span>
+                  </a>
+                <% } else { %>
+                  <a href="/books/<%= book._id %>" class="btn-action btn-view">
+                    <i class="fas fa-book-open"></i>
+                    <span>Xem Sách</span>
+                  </a>
+                <% } %>
+
+                <form action="/books/<%= book._id %>?_method=DELETE" method="POST" class="delete-form"
+                  onsubmit="return confirm('Bạn có chắc muốn xóa Sách &quot;<%= book.title %>&quot; không?');">
+                  <input type="hidden" name="bookId" value="<%= book._id %>">
+                  <button type="submit" class="btn-action btn-delete">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Xóa</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-book-dead"></i>
+      </div>
+      <h3>Chưa có Sách nào</h3>
+      <p>Bắt đầu hành trình sáng tạo của bạn ngay hôm nay!</p>
+      <a href="/books/write" class="btn-empty-action">
+        <i class="fas fa-plus-circle"></i>
+        Viết Sách đầu tiên
+      </a>
+    </div>
+    <% } %>
+
+    <!-- Back Button -->
+    <div class="back-button-section">
+      <a href="/books" class="btn-back">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại danh sách Sách</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+  }
+
+  .my-books-container {
+    position: relative;
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+
+  /* Animated Background */
+  .animated-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 20s infinite ease-in-out;
+  }
+
+  .shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .shape-2 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    right: -50px;
+    animation-delay: 5s;
+  }
+
+  .shape-3 {
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    left: 30%;
+    animation-delay: 10s;
+  }
+
+  .shape-4 {
+    width: 150px;
+    height: 150px;
+    top: 20%;
+    right: 20%;
+    animation-delay: 15s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(50px, 50px) rotate(90deg);
+    }
+    50% {
+      transform: translate(0, 100px) rotate(180deg);
+    }
+    75% {
+      transform: translate(-50px, 50px) rotate(270deg);
+    }
+  }
+
+  /* Header Section */
+  .page-header-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.6s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .header-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+  }
+
+  .header-subtitle {
+    color: #6b7280;
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+  }
+
+  .btn-create-new {
+    position: relative;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .btn-create-new:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  .btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-create-new:hover .btn-shine {
+    left: 100%;
+  }
+
+  /* Alert Messages */
+  .alert-custom {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.5s ease;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .alert-success-custom {
+    background: rgba(16, 185, 129, 0.15);
+    border-left: 4px solid #10b981;
+    color: #065f46;
+  }
+
+  .alert-danger-custom {
+    background: rgba(239, 68, 68, 0.15);
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+  }
+
+  .alert-icon {
+    font-size: 1.5rem;
+  }
+
+  .alert-content {
+    flex: 1;
+  }
+
+  .alert-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .alert-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .alert-close:hover {
+    opacity: 1;
+  }
+
+  /* Books Grid */
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .book-card {
+    animation: fadeInUp 0.6s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .book-card-inner {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+  }
+
+  .book-card-inner:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Status Badge */
+  .status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+  }
+
+  .status-published {
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+  }
+
+  .status-draft {
+    background: rgba(107, 114, 128, 0.9);
+    color: white;
+  }
+
+  /* Book Cover */
+  .book-cover-section {
+    position: relative;
+    height: 250px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+  }
+
+  .book-cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 4rem;
+  }
+
+  .book-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .book-card-inner:hover .book-overlay {
+    opacity: 1;
+  }
+
+  .overlay-icons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .overlay-icon {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667eea;
+    font-size: 1.25rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    transform: scale(0);
+  }
+
+  .book-card-inner:hover .overlay-icon {
+    transform: scale(1);
+  }
+
+  .overlay-icon:hover {
+    transform: scale(1.1);
+    background: #667eea;
+    color: white;
+  }
+
+  /* Book Info */
+  .book-info-section {
+    padding: 1.5rem;
+  }
+
+  .book-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .book-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .meta-item i {
+    color: #667eea;
+  }
+
+  .book-description {
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .delete-form {
+    flex: 1;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-action::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-action:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-action span,
+  .btn-action i {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-edit {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+  }
+
+  .btn-view {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+  }
+
+  .btn-delete {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Empty State */
+  .empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.6s ease;
+  }
+
+  .empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .empty-state h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+  }
+
+  .empty-state p {
+    color: #6b7280;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-empty-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-empty-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  /* Back Button */
+  .back-button-section {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: white;
+    color: #667eea;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-back:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header-content {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-left {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 1.8rem;
+    }
+
+    .books-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .btn-create-new {
+      justify-content: center;
+    }
+  }
+</style>

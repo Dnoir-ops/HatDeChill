@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác thực OTP - Quên mật khẩu</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: white;
+      }
+
+      .otp-container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px 30px;
+        margin: 80px auto;
+        max-width: 420px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .header-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .header h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-danger {
+        background-color: #fee;
+        color: #c33;
+        border-left: 4px solid #c33;
+      }
+
+      .alert-success {
+        background-color: #efe;
+        color: #3c3;
+        border-left: 4px solid #3c3;
+      }
+
+      .otp-inputs {
+        display: flex;
+        gap: 12px;
+        margin: 24px auto;
+        justify-content: center;
+      }
+
+      .otp-input {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+      }
+
+      .otp-input:hover {
+        border-color: #667eea;
+        background: #fff;
+      }
+
+      .otp-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .otp-input.filled {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .resend-section {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .resend-text {
+        font-size: 13px;
+        color: #999;
+      }
+
+      .resend-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s;
+        display: inline;
+      }
+
+      .resend-link:hover:not(.disabled) {
+        color: #764ba2;
+      }
+
+      .resend-link.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .countdown {
+        font-size: 12px;
+        color: #667eea;
+        font-weight: 600;
+        margin-left: 4px;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        background: #333;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        animation: slideInRight 0.3s ease-out;
+        z-index: 1000;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .toast.success {
+        background: #10b981;
+      }
+
+      .toast.error {
+        background: #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="otp-container">
+      <div class="header">
+        <div class="header-icon">🔑</div>
+        <h2>Xác thực OTP quên mật khẩu</h2>
+        <p>Nhập mã 6 chữ số đã được gửi đến email của bạn</p>
+      </div>
+
+      <% if (error && error.length) { %>
+      <div class="alert alert-danger"><%= error[0] %></div>
+      <% } %> <% if (success && success.length) { %>
+      <div class="alert alert-success"><%= success[0] %></div>
+      <% } %>
+
+      <form id="otpForm" method="POST" action="/users/reset-otp">
+        <div class="otp-inputs">
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+          <input
+            type="text"
+            class="otp-input"
+            maxlength="1"
+            inputmode="numeric"
+          />
+        </div>
+        <input type="hidden" id="otpValue" name="otp" />
+        <button type="submit" class="submit-btn">Xác thực OTP</button>
+      </form>
+
+      <div class="resend-section">
+        <p class="resend-text">
+          Không nhận được mã?
+          <a class="resend-link" id="resendBtn" onclick="handleResend()"
+            >Gửi lại</a
+          >
+          <span class="countdown" id="countdown"></span>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const otpInputs = document.querySelectorAll(".otp-input");
+      const otpValue = document.getElementById("otpValue");
+      const resendBtn = document.getElementById("resendBtn");
+      const countdownEl = document.getElementById("countdown");
+      let resendTimeout = null;
+
+      otpInputs.forEach((input, index) => {
+        // Sử dụng keydown để điều khiển focus
+        input.addEventListener("keydown", (e) => {
+          const key = e.key;
+
+          if (["Backspace", "Tab", "ArrowLeft", "ArrowRight"].includes(key)) {
+            if (key === "Backspace" && !input.value && index > 0) {
+              otpInputs[index - 1].focus();
+            }
+            return;
+          }
+
+          if (!/^[0-9]$/.test(key)) {
+            e.preventDefault();
+            return;
+          }
+
+          // Khi gõ số, ghi lại giá trị nhưng KHÔNG cập nhật ngay OTP
+          e.preventDefault();
+          input.value = key;
+          input.classList.add("filled");
+
+          if (index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+          }
+
+          // Delay nhẹ 1 frame để đảm bảo DOM cập nhật xong
+          requestAnimationFrame(updateOtpValue);
+        });
+
+        // Lắng nghe event input để đảm bảo giá trị cuối luôn đúng
+        input.addEventListener("input", updateOtpValue);
+
+        // Dán cả chuỗi 6 số
+        input.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const paste = (e.clipboardData || window.clipboardData).getData(
+            "text"
+          );
+          const digits = paste.replace(/\D/g, "").slice(0, otpInputs.length);
+          digits.split("").forEach((num, i) => {
+            otpInputs[i].value = num;
+            otpInputs[i].classList.add("filled");
+          });
+          updateOtpValue();
+          if (digits.length < otpInputs.length)
+            otpInputs[digits.length].focus();
+          else otpInputs[otpInputs.length - 1].focus();
+        });
+      });
+
+      function updateOtpValue() {
+        otpValue.value = Array.from(otpInputs)
+          .map((input) => input.value)
+          .join("");
+      }
+
+      // Countdown resend
+      function showToast(msg, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      function startCountdown(sec = 60) {
+        resendBtn.classList.add("disabled");
+        let t = sec;
+        const tick = () => {
+          if (t > 0) {
+            countdownEl.textContent = `(${t--}s)`;
+            resendTimeout = setTimeout(tick, 1000);
+          } else {
+            countdownEl.textContent = "";
+            resendBtn.classList.remove("disabled");
+          }
+        };
+        tick();
+      }
+
+      function handleResend() {
+        if (resendBtn.classList.contains("disabled")) return;
+
+        fetch("/users/resend-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              showToast("✓ Mã OTP đã được gửi lại", "success");
+              startCountdown(60);
+              otpInputs.forEach((i) => {
+                i.value = "";
+                i.classList.remove("filled");
+              });
+              otpValue.value = "";
+              otpInputs[0].focus();
+            } else {
+              showToast("✗ " + (data.message || "Gửi lại thất bại"), "error");
+            }
+          })
+          .catch(() => showToast("✗ Lỗi kết nối", "error"));
+      }
+
+      window.addEventListener("load", () => startCountdown(60));
+    </script>
+  </body>
+</html>

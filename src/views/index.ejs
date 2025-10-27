@@ -1,0 +1,206 @@
+<div class="container mt-4">
+  <h1 class="text-center">Chào mừng đến với Web Đọc Sách Trực Tuyến</h1>
+  <p class="text-center">
+    Khám phá, tìm kiếm, đọc và lưu sách yêu thích của bạn!
+  </p>
+  <% if (user) { %>
+  <div class="text-center mt-3">
+    <span class="text-muted"
+      >Xin chào, <%= user.name || user.email %>! Đã đăng nhập thành công.</span
+    >
+  </div>
+  <% } %> <% if (!user) { %>
+  <div class="text-center mt-3">
+    <a href="/users/login" class="btn btn-outline-secondary me-2">Đăng nhập</a>
+    <a href="/users/register" class="btn btn-outline-success">Đăng ký</a>
+  </div>
+  <% } %>
+  <div class="text-center mt-3">
+    <a href="/books" class="btn btn-primary">Xem danh sách sách</a>
+    <!-- 🌟 GALLERY SÁCH CHẠY 2 HÀNG -->
+    <section class="gallery-section mt-5 py-4 bg-light rounded-4 shadow-sm">
+      <style>
+        .gallery-section {
+          overflow: hidden;
+          position: relative;
+          background: #fff;
+          padding: 20px 0;
+        }
+
+        .gallery-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          animation: scroll 120s linear infinite;
+          width: max-content;
+        }
+
+        .gallery-item {
+          width: 200px;
+          height: 200px;
+          border-radius: 15px;
+          overflow: hidden;
+          flex-shrink: 0;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+          transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+          transform: scale(1.08);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .gallery-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      </style>
+
+      <div class="gallery-row" id="gallery1">
+        <!-- 🔁 Lặp lại để hiệu ứng chạy vô tận -->
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10523371-L.jpg"
+            alt="Book 1"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/9873156-L.jpg"
+            alt="Book 2"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10909258-L.jpg"
+            alt="Book 3"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/8319256-L.jpg"
+            alt="Book 4"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/240727-L.jpg"
+            alt="Book 5"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11153214-L.jpg"
+            alt="Book 6"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10923345-L.jpg"
+            alt="Book 7"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10530389-L.jpg"
+            alt="Book 8"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10736738-L.jpg"
+            alt="Book 9"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10590976-L.jpg"
+            alt="Book 10"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/10899214-L.jpg"
+            alt="Book 11"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/9871683-L.jpg"
+            alt="Book 12"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11249583-L.jpg"
+            alt="Book 13"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11452394-L.jpg"
+            alt="Book 14"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11633504-L.jpg"
+            alt="Book 15"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/12221548-L.jpg"
+            alt="Book 16"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11334563-L.jpg"
+            alt="Book 17"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11048593-L.jpg"
+            alt="Book 18"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/11574572-L.jpg"
+            alt="Book 19"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://covers.openlibrary.org/b/id/12065439-L.jpg"
+            alt="Book 20"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ⚡️ Script giúp gallery loop mượt -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const galleries = document.querySelectorAll(".gallery-row");
+        galleries.forEach((gallery) => {
+          gallery.innerHTML += gallery.innerHTML; // nhân đôi phần tử để loop mượt
+        });
+      });
+    </script>
+  </div>
+</div>
+
+

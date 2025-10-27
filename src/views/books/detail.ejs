@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sách - <%= book.title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* ==== GLOBAL STYLES ==== */
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==== HEADER SECTION ==== */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            animation: rotate 8s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .page-header h2 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==== BOOK META CARD ==== */
+        .book-meta {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .book-meta img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .book-meta img:hover {
+            transform: scale(1.05);
+        }
+
+        .book-meta p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #333;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .book-meta p:last-child {
+            border-bottom: none;
+        }
+
+        .book-meta strong {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .book-meta i {
+            color: #667eea;
+            width: 20px;
+        }
+
+        .description-text {
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: justify;
+            font-style: italic;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .description-text::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .description-text::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        /* ==== CONTENT SECTION ==== */
+        .content-section {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content-header h4 {
+            color: #667eea;
+            font-weight: 800;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .btn-preview {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-preview:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+            color: white;
+        }
+
+        /* ==== BOOK READER ==== */
+        .book-content-fallback {
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.8;
+            font-family: 'Times New Roman', serif;
+            font-size: 17px;
+            color: #333;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+
+        .book-content-fallback::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .book-content-fallback::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .book-content-fallback::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        .book-content-fallback::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .ia-embed {
+            width: 100%;
+            height: 700px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .source-link {
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+        }
+
+        .source-link a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .source-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* ==== DOWNLOAD BUTTON ==== */
+        .btn-download {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.4s;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-download:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+            color: white;
+        }
+
+        /* ==== COMMENTS SECTION ==== */
+        .comments-section {
+            margin-top: 50px;
+        }
+
+        .comments-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .comments-header h4 {
+            margin: 0;
+            font-weight: 800;
+            font-size: 1.8rem;
+        }
+
+        .comments-body {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .comment-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .comment-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .comment-rating {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .comment-content {
+            color: #333;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .btn-delete-comment {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-delete-comment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        /* ==== COMMENT FORM ==== */
+        .comment-form-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .comment-form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .comment-form-header h5 {
+            margin: 0;
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        .comment-form-body {
+            padding: 30px;
+            background: white;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: #667eea;
+        }
+
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: white;
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .btn-submit-comment {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 14px 35px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.4s;
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit-comment::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-submit-comment:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn-submit-comment:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        /* ==== ALERTS ==== */
+        .alert {
+            border: none;
+            border-radius: 15px;
+            padding: 20px 25px;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .alert a {
+            color: white;
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+                .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .delete-btn i {
+            margin-right: 8px;
+        }
+
+        /* ==== RESPONSIVE ==== */
+        @media (max-width: 768px) {
+            .page-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .book-meta {
+                position: relative;
+                top: 0;
+                margin-bottom: 25px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .ia-embed {
+                height: 500px;
+            }
+        }
+
+        /* ==== ANIMATIONS ==== */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fa-book-open, .fa-comments {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2><i class="fas fa-book-open me-2"></i><%= book.title %></h2>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Left Sidebar - Book Meta -->
+            <div class="col-md-3">
+                <div class="book-meta">
+                    <% if (book.coverImage || book.cover_i) { %>
+                        <img src="<%= book.coverImage || `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` %>" 
+                             alt="<%= book.title %> cover" 
+                             onerror="this.src='https://placehold.co/200x300?text=No+Cover'; this.onerror=null;">
+                    <% } %>
+                   <p><strong><i class="fas fa-user"></i> Tác giả:</strong><br><%= book.author || 'Không xác định' %></p>
+                    <p><strong><i class="fas fa-tags"></i> Thể loại:</strong><br><%= Array.isArray(book.category) ? book.category.join(', ') : (book.category || 'Không xác định') %></p>
+                    <% if (book.description) { %>
+                        <p><strong><i class="fas fa-info-circle"></i> Mô tả:</strong></p>
+                        <div class="description-text"><%= book.description %></div>
+                    <% } %>
+                     <%
+                      // Kiểm tra xem sách có thuộc danh mục "Handwritten Books" không
+                      let isHandwritten = Array.isArray(book.category) ? book.category.includes('Handwritten Books') : book.category === 'Handwritten Books';
+                    %>
+                    <% if (locals.user && user.role === 'admin' && isHandwritten) { %>
+                    <button class="delete-btn" data-book-id="<%= book._id.toString() %>">
+                        <i class="fas fa-trash me-2"></i>Xóa sách
+                    </button>
+                     <% } %>
+                </div>
+            </div>
+
+            <!-- Right Content - Book Reader -->
+            <div class="col-md-9">
+                <div class="content-section">
+                    <div class="content-header">
+                        <h4><i class="fas fa-book-open me-2"></i>Nội dung sách</h4>
+                        <% if (book.previewUrl) { %>
+                            <a href="<%= book.previewUrl %>" class="btn-preview" target="_blank">
+                                <i class="fas fa-external-link-alt me-1"></i>Xem Preview gốc
+                            </a>
+                        <% } %>
+                    </div>
+                    
+                    <% if (book.ia_embed_url) { %>
+                        <!-- Internet Archive Embed -->
+                        <iframe 
+                            src="<%= book.ia_embed_url %>" 
+                            class="ia-embed" 
+                            allowfullscreen 
+                            webkitallowfullscreen 
+                            mozallowfullscreen>
+                            Trình duyệt không hỗ trợ iframe. <a href="<%= book.ia_embed_url.replace('/embed/', '/details/') %>">Xem trực tiếp</a>.
+                        </iframe>
+                    <% } else if (book.fileUrl) { %>
+                        <!-- Display uploaded file content -->
+                        <% if (book.fileUrl.endsWith('.txt') || (fileContent && fileContent.trim() !== '')) { %>
+                            <div class="book-content-fallback">
+                                <%- fileContent || 'Đang tải nội dung...' %>
+                            </div>
+                        <% } else if (book.fileUrl.endsWith('.pdf')) { %>
+                            <!-- PDF Viewer -->
+                            <iframe 
+                                src="<%= book.fileUrl %>#view=FitH" 
+                                class="ia-embed"
+                                type="application/pdf">
+                                Trình duyệt không hỗ trợ hiển thị PDF.
+                            </iframe>
+                        <% } else { %>
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-file-download me-2"></i>
+                                File này cần tải xuống để đọc. Nhấn nút bên dưới để tải về.
+                            </div>
+                        <% } %>
+                    <% } else if (fileContent && fileContent.trim() !== '') { %>
+                        <!-- Fallback content display -->
+                        <div class="book-content-fallback">
+                            <%- fileContent %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-warning text-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Không có nội dung đầy đủ khả dụng. Đây là sách public domain – bạn có thể đọc từ nguồn gốc.
+                        </div>
+                    <% } %>
+                    
+                    <% if (book.isFromAPI) { %>
+                        <div class="source-link">
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-external-link-alt me-2"></i>
+                                Nguồn: <a href="https://openlibrary.org/" target="_blank">Open Library API</a> & 
+                                <a href="<%= book.ia_id ? `https://archive.org/details/${book.ia_id}` : '#' %>" target="_blank">Internet Archive</a> (Public Domain)
+                            </p>
+                            <small class="text-muted">Nội dung được embed từ nguồn gốc – hỗ trợ zoom, flip pages như sách thật.</small>
+                        </div>
+                    <% } else if (book.fileUrl) { %>
+                        <div class="text-center mt-4">
+                            <a href="/books/<%= book._id %>/download" class="btn-download">
+                                <i class="fas fa-download me-2"></i>Tải xuống file đầy đủ
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMENTS SECTION -->
+        <div class="row comments-section">
+            <div class="col-12">
+                <div class="comments-header">
+                    <h4><i class="fas fa-comments me-2"></i>Bình luận về sách</h4>
+                </div>
+                <div class="comments-body">
+                    <!-- Display Comments -->
+                    <% if (typeof comments === 'undefined') { %>
+                        <% var comments = []; %>
+                    <% } %>
+                    <% if (comments && comments.length > 0) { %>
+                        <% comments.forEach(function(comment) { %>
+                            <div class="comment-card">
+                                <div class="comment-header">
+                                    <div>
+                                        <div class="comment-author">
+                                            <i class="fas fa-user-circle me-2"></i>
+                                            <%= comment.user ? comment.user.name : 'Người dùng ẩn danh' %>
+                                        </div>
+                                        <div class="comment-date">
+                                            <i class="far fa-clock me-1"></i>
+                                            <%= comment.createdAt ? comment.createdAt.toLocaleDateString('vi-VN') : 'Không rõ' %>
+                                        </div>
+                                    </div>
+                                    <% if (user && user.role === 'admin') { %>
+                                        <button class="btn-delete-comment delete-comment" 
+                                                data-commentid="<%= comment._id %>" 
+                                                data-bookid="<%= book._id || book.ia_id %>">
+                                            <i class="fas fa-trash me-1"></i>Xóa
+                                        </button>
+                                    <% } %>
+                                </div>
+                                <% if (comment.rating) { %>
+                                    <div class="comment-rating">
+                                        <i class="fas fa-star me-1"></i>
+                                        <%= comment.rating %>/5 sao
+                                    </div>
+                                <% } %>
+                                <div class="comment-content"><%= comment.content || 'Không có nội dung' %></div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-comment-slash me-2"></i>Chưa có bình luận nào cho sách này. Hãy là người đầu tiên!
+                        </div>
+                    <% } %>
+
+                    <!-- Comment Form -->
+                    <% if (user) { %>
+                        <div class="comment-form-card">
+                            <div class="comment-form-header">
+                                <h5><i class="fas fa-edit me-2"></i>Thêm bình luận của bạn</h5>
+                            </div>
+                            <div class="comment-form-body">
+                                <form id="commentForm">
+                                    <input type="hidden" name="bookId" value="<%= book._id || book.ia_id %>">
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-comment"></i>
+                                            Nội dung bình luận
+                                        </label>
+                                        <textarea class="form-control" name="content" rows="4" placeholder="Bạn nghĩ gì về cuốn sách này?" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-star"></i>
+                                            Đánh giá (1-5 sao, tùy chọn)
+                                        </label>
+                                        <input type="number" class="form-control" name="rating" min="1" max="5" placeholder="Nhập số từ 1-5">
+                                    </div>
+                                    <button type="submit" class="btn-submit-comment">
+                                        <i class="fas fa-paper-plane me-2"></i>Gửi bình luận
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-warning text-center mt-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            <a href="/users/login?returnUrl=<%= encodeURIComponent('/books/' + (book._id || book.ia_id)) %>">Đăng nhập</a> 
+                            để thêm bình luận và đánh giá sách.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cover image fallback
+        document.addEventListener('DOMContentLoaded', function() {
+            const img = document.querySelector('img[alt*="cover"]');
+            if (img) {
+                img.onerror = function() {
+                    this.src = 'https://placehold.co/200x300?text=No+Cover';
+                    this.onerror = null;
+                };
+                if (img.naturalWidth === 0) img.onerror();
+            }
+        });
+
+        // Submit comment form (AJAX)
+        document.addEventListener('DOMContentLoaded', () => {
+            const commentForm = document.getElementById('commentForm');
+            if (commentForm) {
+                commentForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    const content = formData.get('content')?.trim();
+                    const rating = formData.get('rating') ? parseInt(formData.get('rating')) : null;
+                    const bookId = '<%= book._id || book.ia_id %>';
+
+                    if (!bookId) {
+                        alert('Lỗi: Không thể xác định ID sách. Vui lòng làm mới trang.');
+                        return;
+                    }
+
+                    if (!content || content.length === 0) {
+                        alert('Vui lòng nhập nội dung bình luận trước khi gửi.');
+                        form.querySelector('textarea[name="content"]').focus();
+                        return;
+                    }
+
+                    // Create JSON object
+                    const commentData = {
+                        content: content
+                    };
+                    if (rating) {
+                        commentData.rating = rating;
+                    }
+
+                    try {
+                        console.log('Gửi bình luận cho bookId:', bookId, 'Data:', commentData);
+                        const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/comments`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify(commentData)
+                        });
+
+                        const responseText = await response.text();
+                        console.log('Phản hồi từ server:', responseText);
+                        if (response.ok) {
+                            const data = JSON.parse(responseText);
+                            alert(data.message || 'Bình luận đã được gửi thành công!');
+                            
+                            // Add new comment to page
+                            const commentsBody = document.querySelector('.comments-body');
+                            if (commentsBody) {
+                                const username = '<%= user ? user.name : "Người dùng ẩn danh" %>';
+                                const newComment = document.createElement('div');
+                                newComment.className = 'comment-card';
+                                newComment.innerHTML = `
+                                    <div class="comment-header">
+                                        <div>
+                                            <div class="comment-author">
+                                                <i class="fas fa-user-circle me-2"></i>${username}
+                                            </div>
+                                            <div class="comment-date">
+                                                <i class="far fa-clock me-1"></i>Vừa rồi
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${rating ? `<div class="comment-rating"><i class="fas fa-star me-1"></i>${rating}/5 sao</div>` : ''}
+                                    <div class="comment-content">${content}</div>
+                                `;
+                                
+                                // Remove "no comments" alert if exists
+                                const noCommentsAlert = commentsBody.querySelector('.alert-info');
+                                if (noCommentsAlert) {
+                                    noCommentsAlert.remove();
+                                }
+                                
+                                // Insert at the top
+                                commentsBody.insertBefore(newComment, commentsBody.firstChild);
+                            }
+                            form.reset();
+                        } else {
+                            let error = { message: 'Lỗi server' };
+                            try {
+                                error = JSON.parse(responseText) || error;
+                            } catch {
+                                error.message = responseText || error.message;
+                            }
+                            alert('Lỗi: ' + error.message);
+                        }
+                    } catch (err) {
+                        console.error('Lỗi chi tiết:', err);
+                        alert('Lỗi kết nối. Vui lòng kiểm tra server.');
+                    }
+                });
+            }
+
+            // Delete comment (AJAX - admin only)
+            document.querySelectorAll('.delete-comment').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if (confirm('Bạn có chắc muốn xóa bình luận này?')) {
+                        const commentId = e.currentTarget.dataset.commentid;
+                        const bookId = e.currentTarget.dataset.bookid;
+                        console.log('Xóa bình luận:', { bookId, commentId });
+                        
+                        try {
+                            const response = await fetch(`/api/books/${encodeURIComponent(bookId)}/comments/${commentId}`, {
+                                method: 'DELETE',
+                               headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        }
+                                });
+                            
+                            if (response.ok) {
+                                const card = e.currentTarget.closest('.comment-card');
+                                if (card) {
+                                    card.style.animation = 'fadeOut 0.3s ease-out';
+                                    setTimeout(() => {
+                                        card.remove();
+                                        
+                                        // Check if no comments left
+                                        const remainingComments = document.querySelectorAll('.comment-card');
+                                        if (remainingComments.length === 0) {
+                                            const commentsBody = document.querySelector('.comments-body');
+                                            if (commentsBody) {
+                                                const noCommentsAlert = document.createElement('div');
+                                                noCommentsAlert.className = 'alert alert-info text-center';
+                                                noCommentsAlert.innerHTML = '<i class="fas fa-comment-slash me-2"></i>Chưa có bình luận nào cho sách này. Hãy là người đầu tiên!';
+                                                commentsBody.insertBefore(noCommentsAlert, commentsBody.firstChild);
+                                            }
+                                        }
+                                    }, 300);
+                                } else {
+                                    console.warn('Không tìm thấy thẻ card chứa nút xóa');
+                                    location.reload();
+                                }
+                            } else {
+                                const error = await response.json();
+                                alert('Lỗi: ' + error.message);
+                            }
+                        } catch (err) {
+                            console.error('Lỗi xóa bình luận:', err);
+                            alert('xóa bình luận thành công');
+                            card.remove();
+                        }
+                    }
+                });
+            });
+        }); 
+               // Delete book (AJAX - redirect to /books immediately)
+            const deleteBtn = document.querySelector('.delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const bookId = deleteBtn.dataset.bookId;
+                    console.log('🔍 Book ID for delete:', bookId);
+                    if (!bookId) {
+                        alert('Lỗi: Không tìm thấy ID sách!');
+                        return;
+                    }
+                    if (!confirm('Bạn có chắc chắn muốn xóa sách này? Hành động này không thể hoàn tác.')) {
+                        return;
+                    }
+                    try {
+                        // Gửi yêu cầu DELETE nhưng không đợi phản hồi
+                        fetch(`/books/${encodeURIComponent(bookId)}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            credentials: 'include'
+                        }).then(response => {
+                            if (!response.ok) {
+                                console.warn('⚠️ Delete request failed:', response.status);
+                            }
+                        }).catch(error => {
+                            console.error('❌ Delete Fetch error:', error);
+                        });
+                        // Chuyển hướng ngay lập tức về /books
+                        window.location.href = '/books';
+                    } catch (error) {
+                        console.error('❌ Error initiating delete:', error);
+                        // Chuyển hướng ngay cả khi có lỗi
+                        window.location.href = '/books';
+                    }
+                });
+            }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
