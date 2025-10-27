@@ -83,16 +83,17 @@ exports.getBooksFromAPI = async (req, res) => {
 exports.getBooks = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 12 } = req.query;
-    const skip = (page - 1) * parseInt(limit);
-    let allBooks = [];
+    const currentPage = parseInt(page);
+    const itemsPerPage = parseInt(limit);
+    const skip = (currentPage - 1) * itemsPerPage;
+
     let currentCategory = category || "all";
     let searchTerm = search || "";
-    const apiLimitBuffer = 24;
 
-    // ✅ CAS 1: "Handwritten Books" → CHỈ DB (giữ nguyên như cũ)
+    // ==============================================================
+    // 1. CAS 1: Handwritten Books → CHỈ DB (giữ nguyên)
+    // ==============================================================
     if (currentCategory === "Handwritten Books") {
-      console.log('Fetch ONLY local handwritten books');
-      
       let dbQuery = {
         status: "published",
         $or: [
@@ -113,137 +114,130 @@ exports.getBooks = async (req, res) => {
         ];
       }
 
-      const dbBooks = await Book.find(dbQuery)
+      const total = await Book.countDocuments(dbQuery);
+      const books = await Book.find(dbQuery)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(parseInt(limit));
+        .limit(itemsPerPage);
 
-      allBooks = dbBooks;
-      const dbTotal = await Book.countDocuments(dbQuery);
-      const totalPages = Math.ceil(dbTotal / parseInt(limit));
+      const totalPages = Math.ceil(total / itemsPerPage);
 
       return res.render("books/list", {
-        books: allBooks,
+        books,
         categories: defaultCategories,
         currentCategory: "Handwritten Books",
         search: searchTerm,
-        currentPage: parseInt(page),
+        currentPage,
         totalPages,
-        hasNextPage: parseInt(page) < totalPages,
-        limit: parseInt(limit),
+        hasNextPage: currentPage < totalPages,
+        limit: itemsPerPage,
         user: req.session.user || null
       });
     }
 
-    // ✅ CAS 2: Các thể loại khác → API + DB (nếu DB có category trùng)
-    let dbBooks = [];
-    let dbTotal = 0;
+    // ==============================================================
+    // 2. CAS 2: Các thể loại khác → API + DB (merge đúng cách)
+    // ==============================================================
 
-    // Query DB: chỉ lấy sách published, có category trùng với currentCategory (nếu không phải "all")
+    // ---- Lấy DB trước (cùng skip/limit với trang hiện tại) ----
     let dbQuery = { status: "published" };
     if (currentCategory !== "all") {
       dbQuery.category = currentCategory;
     }
-
-    // Tìm kiếm title/author
     if (searchTerm && searchTerm.trim() !== "") {
-      const searchRegex = { $regex: searchTerm.trim(), $options: "i" };
-      dbQuery.$and = (dbQuery.$and || []).concat([
-        {
-          $or: [
-            { title: searchRegex },
-            { author: searchRegex }
-          ]
-        }
-      ]);
+      const regex = { $regex: searchTerm.trim(), $options: "i" };
+      dbQuery.$or = [{ title: regex }, { author: regex }];
     }
 
-    dbBooks = await Book.find(dbQuery)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const [dbBooks, dbTotal] = await Promise.all([
+      Book.find(dbQuery).sort({ createdAt: -1 }).skip(skip).limit(itemsPerPage),
+      Book.countDocuments(dbQuery)
+    ]);
 
-    dbTotal = await Book.countDocuments(dbQuery);
+    // ---- Lấy API (lấy dư để đảm bảo đủ dữ liệu) ----
+    const apiLimit = itemsPerPage * 3; // lấy gấp 3 để bù đắp
+    const apiOffset = skip;
 
-    // Fetch API
     let safeQuery = searchTerm && searchTerm.trim() ? searchTerm.trim() : "fiction";
     safeQuery = encodeURIComponent(safeQuery.replace(/[^a-zA-Z0-9\s]/g, ''));
-    const apiOffset = (page - 1) * apiLimitBuffer;
 
     let apiUrl = `https://openlibrary.org/search.json?q=${safeQuery}`;
     if (currentCategory !== "all") {
       apiUrl += `+subject:${encodeURIComponent(currentCategory)}`;
     }
-    apiUrl += `&limit=${apiLimitBuffer}&offset=${apiOffset}&fields=key,title,author_name,cover_i,first_publish_year,subject`;
+    apiUrl += `&limit=${apiLimit}&offset=${apiOffset}&fields=key,title,author_name,cover_i,first_publish_year,subject`;
 
     let apiBooks = [];
-    let apiEffectiveTotal = 0;
+    let apiTotal = 0;
 
     try {
-      const apiResponse = await axios.get(apiUrl, { timeout: 10000 });
-      const apiBooksRaw = apiResponse.data.docs || [];
-
-      apiBooks = apiBooksRaw.map((doc) => {
-        let bookCategory = ['General'];
-        if (doc.subject && Array.isArray(doc.subject) && doc.subject.length > 0) {
-          bookCategory = doc.subject.slice(0, 3);
-        }
-
-        return {
-          _id: doc.key.replace(/^\//, ""),
-          title: doc.title || "Unknown Title",
-          author: doc.author_name ? doc.author_name[0] : "Unknown Author",
-          category: bookCategory,
-          description: doc.description || "",
-          previewUrl: null,
-          cover_i: doc.cover_i || null,
-          covers: doc.cover_i ? [doc.cover_i] : [],
-          status: "published",
-          isFromAPI: true
-        };
-      });
-      apiEffectiveTotal = apiResponse.data.numFound || 0;
-    } catch (apiErr) {
-      console.warn('Lỗi fetch API:', apiErr.message);
-      req.flash("error", "Không thể lấy dữ liệu từ Open Library. Chỉ hiển thị sách nội bộ.");
+      const { data } = await axios.get(apiUrl, { timeout: 10000 });
+      apiBooks = (data.docs || []).map(doc => ({
+        _id: doc.key.replace(/^\//, ""),
+        title: doc.title || "Unknown Title",
+        author: doc.author_name ? doc.author_name[0] : "Unknown Author",
+        category: (doc.subject || []).slice(0, 3),
+        cover_i: doc.cover_i || null,
+        isFromAPI: true
+      }));
+      apiTotal = data.numFound || 0;
+    } catch (err) {
+      console.warn('API lỗi:', err.message);
+      req.flash("error", "Không thể kết nối Open Library. Chỉ hiển thị sách nội bộ.");
     }
 
-    // ✅ Gộp DB + API
-    allBooks = [...dbBooks, ...apiBooks];
+    // ---- Gộp DB + API (DB ưu tiên) ----
+    const seen = new Set();
+    const merged = [];
 
-    // Sắp xếp theo tiêu đề (có thể thay bằng createdAt nếu muốn ưu tiên sách mới)
-    allBooks.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    // DB trước
+    dbBooks.forEach(book => {
+      const id = book._id.toString();
+      if (!seen.has(id)) {
+        seen.add(id);
+        merged.push(book);
+      }
+    });
 
-    // Cắt theo limit
-    const start = skip;
-    const end = start + parseInt(limit);
-    const paginatedBooks = allBooks.slice(start, end);
+    // API sau (chỉ thêm nếu chưa có)
+    apiBooks.forEach(book => {
+      if (!seen.has(book._id)) {
+        seen.add(book._id);
+        merged.push(book);
+      }
+    });
 
-    const total = dbTotal + apiEffectiveTotal;
-    const totalPages = Math.ceil(total / parseInt(limit));
-    const hasNextPage = parseInt(page) < totalPages;
+    // Cắt đúng số lượng cho trang hiện tại
+    const start = 0; // vì đã skip từ đầu
+    const end = itemsPerPage;
+    const paginatedBooks = merged.slice(start, end);
+
+    // ---- Tính totalPages chính xác ----
+    const totalItems = dbTotal + apiTotal;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return res.render("books/list", {
       books: paginatedBooks,
       categories: defaultCategories,
       currentCategory,
       search: searchTerm,
-      currentPage: parseInt(page),
+      currentPage,
       totalPages,
-      hasNextPage,
-      limit: parseInt(limit),
+      hasNextPage: currentPage < totalPages,
+      limit: itemsPerPage,
       user: req.session.user || null
     });
+
   } catch (err) {
     console.error("Lỗi getBooks:", err);
-    req.flash("error", "Không thể tải danh sách sách!");
+    req.flash("error", "Lỗi tải danh sách sách!");
     return res.render("books/list", {
       books: [],
       categories: defaultCategories,
       currentCategory: "all",
       search: "",
       currentPage: 1,
-      totalPages: 0,
+      totalPages: 1,
       hasNextPage: false,
       limit: 12,
       user: req.session.user || null
