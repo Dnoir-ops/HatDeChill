@@ -458,52 +458,72 @@ exports.updateBook = async (req, res) => {
 // =============================
 
 exports.deleteBook = async (req, res) => {
-    try {
-        const bookId = req.params.id;
-        console.log('🔍 Attempting to delete book:', bookId);
+  try {
+    const bookId = req.params.id;
+    const book = await Book.findById(bookId);
 
-        // Cấm xóa sách từ API
-        if (bookId.includes('works/')) {
-            req.flash('error', 'Không thể xóa sách từ API!');
-            return res.status(400).json({ message: 'Không thể xóa sách từ API!' });
-        }
-
-        const book = await Book.findById(bookId);
-        if (!book) {
-            req.flash('error', 'Không tìm thấy sách!');
-            return res.status(404).json({ message: 'Không tìm thấy sách!' });
-        }
-
-        // Kiểm tra quyền
-        if (
-            req.session.user.role !== 'admin' &&
-            book.uploadedBy.toString() !== req.session.user.id
-        ) {
-            req.flash('error', 'Bạn không có quyền xóa sách này!');
-            return res.status(403).json({ message: 'Bạn không có quyền xóa sách này!' });
-        }
-
-        // Xóa file nếu tồn tại
-        if (book.fileUrl) {
-            const filePath = path.join(process.cwd(), book.fileUrl);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                console.log('🗑️ Deleted file:', filePath);
-            }
-        }
-
-        // Xóa sách khỏi DB
-        await Book.findByIdAndDelete(bookId);
-        console.log('✅ Book deleted from DB:', bookId);
-
-        // Thêm thông báo flash cho trang /books
-        req.flash('success', 'Xóa sách thành công!');
-        return res.status(200).json({ message: 'Xóa sách thành công!' });
-    } catch (err) {
-        console.error('❌ Error in deleteBook:', err);
-        req.flash('error', 'Lỗi server khi xóa sách!');
-        return res.status(500).json({ message: 'Lỗi server khi xóa sách!' });
+    if (!book) {
+      return res.status(404).send(`
+        <script>
+          alert('Sách không tồn tại');
+          window.location.href = '/books';
+        </script>
+      `);
     }
+
+    const isOwner = book.uploadedBy.toString() === req.session.user.id;
+    const isAdmin = req.session.user.role === 'admin';
+    if (!isOwner && !isAdmin) {
+      return res.status(403).send(`
+        <script>
+          alert('Bạn không có quyền xóa sách này');
+          window.location.href = '/books';
+        </script>
+      `);
+    }
+
+    await Book.findByIdAndDelete(bookId);
+    req.flash('success', 'Xóa sách thành công!');
+
+    // LẤY TRANG TRƯỚC ĐÓ
+    const referer = req.get('Referer') || '/books';
+    let redirectTo = '/books'; // Mặc định
+
+    // KIỂM TRA: Nếu referer chứa /archive → về kho
+    if (referer && referer.includes('/books/archive')) {
+      redirectTo = '/books/archive';
+    } else {
+      redirectTo = '/books';
+    }
+
+    if (req.xhr || req.get('X-Requested-With') === 'XMLHttpRequest') {
+      res.send(`
+        <script>
+          alert('Xóa sách thành công!');
+          window.location.href = '${redirectTo}';
+        </script>
+      `);
+    } else {
+      res.redirect(redirectTo);
+    }
+
+  } catch (err) {
+    console.error('Lỗi xóa sách:', err);
+    const referer = req.get('Referer') || '/books';
+    const redirectTo = referer.includes('/books/archive') ? '/books/archive' : '/books';
+
+    if (req.xhr) {
+      res.send(`
+        <script>
+          alert('Lỗi server khi xóa sách');
+          window.location.href = '${redirectTo}';
+        </script>
+      `);
+    } else {
+      req.flash('error', 'Lỗi server khi xóa sách');
+      res.redirect(redirectTo);
+    }
+  }
 };
 // =============================
 // 📥 Tải xuống file sách
