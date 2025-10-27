@@ -1,6 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const { DOMMatrix, ImageData, Path2D } = require("canvas");
+
+if (!global.DOMMatrix) global.DOMMatrix = DOMMatrix;
+if (!global.ImageData) global.ImageData = ImageData;
+if (!global.Path2D) global.Path2D = Path2D;
+
 const cors = require("cors");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
