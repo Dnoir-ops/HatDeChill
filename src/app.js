@@ -17,7 +17,7 @@ const sessionAuth = require("./middleware/sessionAuth");
 const roleMiddleware = require("./middleware/roleMiddleware");
 // Models & utils
 const UserModel = require("./models/User");
-const { sendOTP } = require('../utils/mailer');
+//const { sendOTP } = require('../utils/mailer');
 
 const { generateOTP } = require("./utils/otp");
 
@@ -173,17 +173,15 @@ app.get("/users/register", (req, res) => {
   if (req.session.user) return res.redirect("/"); // Thêm: Đã login thì về home
   res.render("users/register"); // Không pass error/success → Dùng res.locals từ flash
 });
-
+// ĐĂNG KÝ – KHÔNG OTP, TẠO USER NGAY
 app.post("/users/register", async (req, res) => {
-  // Kiểm tra nếu đã login
   if (req.session.user) {
     req.flash("error", "Bạn đã đăng nhập rồi!");
     return res.redirect("/");
   }
 
-  const { name, email, password, role = "author" } = req.body; // Default role
+  const { name, email, password, role = "author" } = req.body;
 
-  // Validation cơ bản
   if (!name || !email || !password || password.length < 6) {
     req.flash("error", "Tên, email và mật khẩu (ít nhất 6 ký tự) là bắt buộc!");
     return res.redirect("/users/register");
@@ -196,6 +194,27 @@ app.post("/users/register", async (req, res) => {
     req.flash("error", "Email đã tồn tại!");
     return res.redirect("/users/register");
   }
+
+  try {
+    const user = new UserModel({
+      name: name.trim(),
+      email: normalizedEmail,
+      password,
+      role,
+      isVerified: true // XÁC THỰC NGAY
+    });
+
+    await user.save();
+
+    req.session.user = { id: user._id, email: user.email, role: user.role };
+    req.flash("success", "Đăng ký thành công! Chào mừng bạn!");
+    return res.redirect("/");
+  } catch (err) {
+    console.error("Register error:", err);
+    req.flash("error", "Lỗi đăng ký! Vui lòng thử lại.");
+    return res.redirect("/users/register");
+  }
+});
 
   // try {
   //   const otp = generateOTP();
@@ -224,7 +243,7 @@ app.post("/users/register", async (req, res) => {
   //     req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
   //     return res.redirect("/users/register");
   //   }
-
+)
 //     // Thành công: lưu session + chuyển trang
 //     req.session.pendingEmail = normalizedEmail;
 //     req.flash(
@@ -393,83 +412,83 @@ app.post(
   }
 );
 
-// ======= QUÊN MẬT KHẨU =======
-app.get("/users/forgot-password", (req, res) =>
-  res.render("users/forgot-password")
-);
+// // ======= QUÊN MẬT KHẨU =======
+// app.get("/users/forgot-password", (req, res) =>
+//   res.render("users/forgot-password")
+// );
 
-app.post("/users/forgot-password", async (req, res) => {
-  const { email } = req.body;
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    req.flash("error", "Email không tồn tại!");
-    return res.redirect("/users/forgot-password");
-  }
-  const otp = generateOTP();
-  user.otp = otp;
-  user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-  await user.save();
-  await sendOTP(email, otp);
-  req.session.resetEmail = email;
-  req.flash(
-    "success",
-    "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực."
-  );
-  res.redirect("/users/reset-otp");
-});
+// app.post("/users/forgot-password", async (req, res) => {
+//   const { email } = req.body;
+//   const user = await UserModel.findOne({ email });
+//   if (!user) {
+//     req.flash("error", "Email không tồn tại!");
+//     return res.redirect("/users/forgot-password");
+//   }
+//   const otp = generateOTP();
+//   user.otp = otp;
+//   user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+//   await user.save();
+//   await sendOTP(email, otp);
+//   req.session.resetEmail = email;
+//   req.flash(
+//     "success",
+//     "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực."
+//   );
+//   res.redirect("/users/reset-otp");
+// });
 
-app.get("/users/reset-otp", (req, res) => {
-  if (!req.session.resetEmail) return res.redirect("/users/forgot-password");
-  res.render("users/reset-otp");
-});
+// app.get("/users/reset-otp", (req, res) => {
+//   if (!req.session.resetEmail) return res.redirect("/users/forgot-password");
+//   res.render("users/reset-otp");
+// });
 
-app.post("/users/reset-otp", async (req, res) => {
-  const { otp } = req.body;
-  const email = req.session.resetEmail;
-  if (!email) return res.redirect("/users/forgot-password");
-  const user = await UserModel.findOne({ email });
-  if (
-    !user ||
-    user.otp !== otp ||
-    !user.otpExpires ||
-    user.otpExpires < new Date()
-  ) {
-    req.flash("error", "OTP không đúng hoặc đã hết hạn!");
-    return res.redirect("/users/reset-otp");
-  }
-  req.session.allowReset = true;
-  req.flash("success", "Xác thực OTP thành công! Hãy đặt lại mật khẩu mới.");
-  res.redirect("/users/reset-password");
-});
+// app.post("/users/reset-otp", async (req, res) => {
+//   const { otp } = req.body;
+//   const email = req.session.resetEmail;
+//   if (!email) return res.redirect("/users/forgot-password");
+//   const user = await UserModel.findOne({ email });
+//   if (
+//     !user ||
+//     user.otp !== otp ||
+//     !user.otpExpires ||
+//     user.otpExpires < new Date()
+//   ) {
+//     req.flash("error", "OTP không đúng hoặc đã hết hạn!");
+//     return res.redirect("/users/reset-otp");
+//   }
+//   req.session.allowReset = true;
+//   req.flash("success", "Xác thực OTP thành công! Hãy đặt lại mật khẩu mới.");
+//   res.redirect("/users/reset-password");
+// });
 
-app.get("/users/reset-password", (req, res) => {
-  if (!req.session.resetEmail || !req.session.allowReset)
-    return res.redirect("/users/forgot-password");
-  res.render("users/reset-password");
-});
+// app.get("/users/reset-password", (req, res) => {
+//   if (!req.session.resetEmail || !req.session.allowReset)
+//     return res.redirect("/users/forgot-password");
+//   res.render("users/reset-password");
+// });
 
-app.post("/users/reset-password", async (req, res) => {
-  const { password } = req.body;
-  const email = req.session.resetEmail;
-  if (!email || !req.session.allowReset)
-    return res.redirect("/users/forgot-password");
+// app.post("/users/reset-password", async (req, res) => {
+//   const { password } = req.body;
+//   const email = req.session.resetEmail;
+//   if (!email || !req.session.allowReset)
+//     return res.redirect("/users/forgot-password");
 
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    req.flash("error", "Không tìm thấy tài khoản!");
-    return res.redirect("/users/forgot-password");
-  }
+//   const user = await UserModel.findOne({ email });
+//   if (!user) {
+//     req.flash("error", "Không tìm thấy tài khoản!");
+//     return res.redirect("/users/forgot-password");
+//   }
 
-  user.password = password;
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  await user.save();
+//   user.password = password;
+//   user.otp = undefined;
+//   user.otpExpires = undefined;
+//   await user.save();
 
-  delete req.session.resetEmail;
-  delete req.session.allowReset;
-  req.flash("success", "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập.");
-  res.redirect("/users/login");
-});
+//   delete req.session.resetEmail;
+//   delete req.session.allowReset;
+//   req.flash("success", "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập.");
+//   res.redirect("/users/login");
+// });
 
 // =============================
 // 🔗 API ROUTES
