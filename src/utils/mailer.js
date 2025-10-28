@@ -1,8 +1,10 @@
 // src/utils/mailer.js
 const { Resend } = require('resend');
 
+// Khởi tạo Resend với API Key từ Render
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Hàm gửi OTP
 async function sendOTP(email, otp) {
   try {
     const { data, error } = await resend.emails.send({
