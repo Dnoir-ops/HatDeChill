@@ -62,11 +62,12 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false, // Dev mode: false, Production: true
+      secure: process.env.NODE_ENV === 'production', // TỰ BẬT HTTPS
       sameSite: "lax",
     },
   })
 );
+app.set('trust proxy', 1);
 app.use((req, res, next) => {
   console.log('🔍 Session Debug:', {
     sessionID: req.sessionID,
