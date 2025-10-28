@@ -527,5 +527,5 @@ app.get("/debug", async (req, res) => {
     });
   } catch (err) {
     res.json({ error: err.message });
-  }
+  }//test
 });
