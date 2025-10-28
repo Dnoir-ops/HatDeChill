@@ -1,19 +1,72 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
+const bcrypt = require('bcrypt');
+
 // Đăng ký
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'Email đã tồn tại' });
-    const user = new User({ name, email, password, role: 'author' }); // ✅ Explicit set role 'author' (dù default cũng vậy)
+
+    // 1. CHUẨN HÓA EMAIL
+    const normalizedEmail = email?.trim().toLowerCase();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
+      if (isApiRequest(req)) {
+        return res.status(400).json({ message: 'Email không hợp lệ' });
+      }
+      req.flash('error', 'Email không hợp lệ');
+      return res.redirect('/users/register');
+    }
+
+    // 2. KIỂM TRA TRÙNG
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      if (isApiRequest(req)) {
+        return res.status(400).json({ message: 'Email đã tồn tại' });
+      }
+      req.flash('error', 'Email đã được sử dụng');
+      return res.redirect('/users/register');
+    }
+
+    // 3. MÃ HÓA MẬT KHẨU
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 4. TẠO USER
+    const user = new User({
+      name: name?.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+      role: 'author' // hoặc 'reader' tùy bạn
+    });
     await user.save();
-    res.status(201).json({ message: 'Đăng ký thành công' });
+
+    // 5. THÀNH CÔNG
+    if (isApiRequest(req)) {
+      return res.status(201).json({ 
+        message: 'Đăng ký thành công',
+        user: { id: user._id, email: user.email, role: user.role }
+      });
+    }
+
+    req.flash('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
+    return res.redirect('/users/login');
+
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
+    console.error('Lỗi đăng ký:', err);
+    if (isApiRequest(req)) {
+      return res.status(500).json({ message: 'Lỗi server', error: err.message });
+    }
+    req.flash('error', 'Lỗi server, vui lòng thử lại');
+    return res.redirect('/users/register');
   }
 };
+
+// HÀM HỖ TRỢ: KIỂM TRA LÀ API HAY WEB
+function isApiRequest(req) {
+  return req.xhr || 
+         req.headers.accept?.includes('json') || 
+         req.originalUrl.startsWith('/api');
+}
 // Đăng nhập
 exports.login = async (req, res) => {
 	try {
