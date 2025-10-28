@@ -7,6 +7,7 @@
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "lint": "eslint .",
+    "postinstall": "rm -rf node_modules/nodemailer || true",
     "test": "jest"
   },
   "keywords": [
