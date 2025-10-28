@@ -17,7 +17,8 @@ const sessionAuth = require("./middleware/sessionAuth");
 const roleMiddleware = require("./middleware/roleMiddleware");
 // Models & utils
 const UserModel = require("./models/User");
-const { sendOTP } = require("./utils/mailer");
+const { sendOTP } = require('../utils/mailer');
+
 const { generateOTP } = require("./utils/otp");
 
 
