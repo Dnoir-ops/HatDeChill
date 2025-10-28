@@ -503,3 +503,29 @@ const bookRoutes = require("./routes/books");
 app.use("/books", bookRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log("🚀 Server running on port", PORT));
+
+// DEBUG ROUTE - XÓA SAU KHI FIX XONG
+app.get("/debug", async (req, res) => {
+  if (process.env.NODE_ENV !== 'production') {
+    return res.send("Chỉ chạy trên deploy!");
+  }
+
+  const testEmail = "debug-test-unique-" + Date.now() + "@example.com";
+
+  try {
+    const existing = await UserModel.findOne({ email: testEmail });
+    res.json({
+      message: "Kiểm tra debug",
+      test_email: testEmail,
+      user_exists_in_db: !!existing,
+      flash_error: req.flash("error"),
+      flash_success: req.flash("success"),
+      session_id: req.sessionID,
+      session_user: req.session.user || null,
+      env: process.env.NODE_ENV,
+      tip: "Dùng email này để test: " + testEmail
+    });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
