@@ -243,7 +243,7 @@ app.post("/users/register", async (req, res) => {
   //     req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
   //     return res.redirect("/users/register");
   //   }
-)
+
 //     // Thành công: lưu session + chuyển trang
 //     req.session.pendingEmail = normalizedEmail;
 //     req.flash(
