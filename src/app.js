@@ -19,7 +19,6 @@ const roleMiddleware = require("./middleware/roleMiddleware");
 const UserModel = require("./models/User");
 //const { sendOTP } = require('../utils/mailer');
 
-const { generateOTP } = require("./utils/otp");
 
 
 

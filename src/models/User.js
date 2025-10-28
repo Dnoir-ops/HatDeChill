@@ -13,9 +13,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true, minlength: 6 }, // Thêm minlength cho bảo mật
   role: { type: String, enum: ['author', 'admin'], default: 'reader' }, // Bỏ 'guest' nếu không dùng
   bio: { type: String, maxlength: 500 },
-  isVerified: { type: Boolean, default: false },
-  otp: { type: String },
-  otpExpires: { type: Date },
+  
+  
   lastLogin: { // Thêm trường mới để theo dõi thời gian đăng nhập gần nhất
     type: Date,
     default: null,
