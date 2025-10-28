@@ -1,11 +1,10 @@
 // src/utils/mailer.js
 const nodemailer = require('nodemailer');
 
-// Tạo transporter – CHỈ 1 LẦN
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587, // ÉP KIỂU SANG SỐ
-  secure: false, // 587 → false, 465 → true
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -15,7 +14,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Hàm gửi OTP
 async function sendOTP(email, otp) {
   const mailOptions = {
     from: `"HatDeChill" <${process.env.SMTP_USER}>`,
@@ -38,11 +36,11 @@ async function sendOTP(email, otp) {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('OTP sent:', info.messageId, 'to:', email);
-    return { success: true, info };
+    console.log('OTP sent successfully:', info.messageId);
+    return { success: true, info }; // ← BẮT BUỘC TRẢ VỀ success: true
   } catch (error) {
     console.error('SMTP ERROR:', error.message);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message }; // ← Trả về lỗi rõ ràng
   }
 }
 

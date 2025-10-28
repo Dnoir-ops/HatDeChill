@@ -180,7 +180,7 @@ app.post("/users/register", async (req, res) => {
     return res.redirect("/");
   }
 
-const { name, email, password, role = "author" } = req.body; // Default role
+  const { name, email, password, role = "author" } = req.body; // Default role
 
   // Validation cơ bản
   if (!name || !email || !password || password.length < 6) {
@@ -188,52 +188,54 @@ const { name, email, password, role = "author" } = req.body; // Default role
     return res.redirect("/users/register");
   }
 
-  const exists = await UserModel.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const exists = await UserModel.findOne({ email: normalizedEmail });
   if (exists) {
     req.flash("error", "Email đã tồn tại!");
     return res.redirect("/users/register");
   }
 
   try {
-    // ❌ Bỏ hash thủ công: Để pre-save hook lo
-    // const hashedPassword = await bcrypt.hash(password, 10);  // Xóa dòng này
-
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
 
     const user = new UserModel({
-      name,
-      email,
-      password, // ✅ Plain password → hook sẽ hash khi save
+      name: name.trim(),
+      email: normalizedEmail,
+      password, // Hook sẽ hash
       role,
       otp,
       otpExpires,
       isVerified: false,
     });
 
-    // Lưu user (hook hash tự động)
+    // Lưu user trước
     await user.save();
 
-    // Gửi OTP và rollback nếu fail
-    try {
-      await sendOTP(email, otp); // Giả sử sendOTP là async
-    } catch (sendErr) {
-      await UserModel.findByIdAndDelete(user._id); // Rollback
-      console.error("Lỗi gửi OTP:", sendErr);
+    // GỬI OTP – KIỂM TRA KẾT QUẢ TRẢ VỀ
+    const sendResult = await sendOTP(normalizedEmail, otp);
+
+    if (!sendResult.success) {
+      // Rollback: xóa user nếu gửi OTP thất bại
+      await UserModel.findByIdAndDelete(user._id);
+      console.error("Lỗi gửi OTP:", sendResult.error || "Unknown SMTP error");
       req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
       return res.redirect("/users/register");
     }
 
-    req.session.pendingEmail = email;
+    // Thành công: lưu session + chuyển trang
+    req.session.pendingEmail = normalizedEmail;
     req.flash(
       "success",
       "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực trong 10 phút."
     );
     return res.redirect("/users/verify-otp");
+
   } catch (err) {
     console.error("Register error:", err);
     req.flash("error", "Lỗi đăng ký! Vui lòng thử lại.");
-    res.redirect("/users/register");
+    return res.redirect("/users/register");
   }
 });
 
