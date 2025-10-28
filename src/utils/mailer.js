@@ -1,14 +1,13 @@
 // src/utils/mailer.js
 const { Resend } = require('resend');
 
-// Khởi tạo Resend với API Key từ Render
+// DÙNG RESEND – KHÔNG SMTP, KHÔNG PORT, KHÔNG LOCALHOST
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Hàm gửi OTP
 async function sendOTP(email, otp) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'HatDeChill <onboarding@resend.dev>', // Miễn phí, không cần domain
+      from: 'HatDeChill <onboarding@resend.dev>',
       to: [email],
       subject: 'Xác thực tài khoản - HatDeChill',
       html: `
@@ -21,8 +20,6 @@ async function sendOTP(email, otp) {
           <p style="font-size: 14px; color: #888;">
             Mã có hiệu lực trong <strong>10 phút</strong>. Không chia sẻ với bất kỳ ai.
           </p>
-          <hr style="border: 1px solid #eee; margin: 20px 0;">
-          <p style="font-size: 12px; color: #aaa;">Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>
         </div>
       `
     });
