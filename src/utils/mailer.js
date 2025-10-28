@@ -1,11 +1,10 @@
 // src/utils/mailer.js
 const nodemailer = require('nodemailer');
 
-// Cấu hình Nodemailer sử dụng biến môi trường SendGrid
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST, // smtp.sendgrid.net
-    port: process.env.SMTP_PORT, // 587
-    secure: false, // Dùng false cho cổng 587 (STARTTLS)
+    port: process.env.SMTP_PORT, // 465 (từ biến môi trường)
+    secure: true, // QUAN TRỌNG: Phải là 'true' cho cổng 465 (SSL)
     auth: {
         user: process.env.SMTP_USER, // apikey
         pass: process.env.SMTP_PASS // API Key
@@ -13,7 +12,6 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendOTP(email, otp) {
-    // SỬ DỤNG EMAIL ĐÃ XÁC MINH TRÊN SENDGRID
     const senderEmail = 'tandat20091979@gmail.com'; 
 
     try {
@@ -35,7 +33,7 @@ async function sendOTP(email, otp) {
             `
         });
         
-        console.log('OTP sent via SendGrid:', info.messageId);
+        console.log('OTP sent via SendGrid (Port 465):', info.messageId);
         return { success: true, info };
     } catch (error) {
         console.error('Lỗi gửi OTP:', error);
