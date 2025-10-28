@@ -197,80 +197,80 @@ app.post("/users/register", async (req, res) => {
     return res.redirect("/users/register");
   }
 
-  try {
-    const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
+  // try {
+  //   const otp = generateOTP();
+  //   const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
 
-    const user = new UserModel({
-      name: name.trim(),
-      email: normalizedEmail,
-      password, // Hook sẽ hash
-      role,
-      otp,
-      otpExpires,
-      isVerified: false,
-    });
+  //   const user = new UserModel({
+  //     name: name.trim(),
+  //     email: normalizedEmail,
+  //     password, // Hook sẽ hash
+  //     role,
+  //     otp,
+  //     otpExpires,
+  //     isVerified: true,
+  //   });
 
-    // Lưu user trước
-    await user.save();
+  //   // Lưu user trước
+  //   await user.save();
 
-    // GỬI OTP – KIỂM TRA KẾT QUẢ TRẢ VỀ
-    const sendResult = await sendOTP(normalizedEmail, otp);
+  //   // GỬI OTP – KIỂM TRA KẾT QUẢ TRẢ VỀ
+  //   const sendResult = await sendOTP(normalizedEmail, otp);
 
-    if (!sendResult.success) {
-      // Rollback: xóa user nếu gửi OTP thất bại
-      await UserModel.findByIdAndDelete(user._id);
-      console.error("Lỗi gửi OTP:", sendResult.error || "Unknown SMTP error");
-      req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
-      return res.redirect("/users/register");
-    }
+  //   if (!sendResult.success) {
+  //     // Rollback: xóa user nếu gửi OTP thất bại
+  //     await UserModel.findByIdAndDelete(user._id);
+  //     console.error("Lỗi gửi OTP:", sendResult.error || "Unknown SMTP error");
+  //     req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
+  //     return res.redirect("/users/register");
+  //   }
 
-    // Thành công: lưu session + chuyển trang
-    req.session.pendingEmail = normalizedEmail;
-    req.flash(
-      "success",
-      "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực trong 10 phút."
-    );
-    return res.redirect("/users/verify-otp");
+//     // Thành công: lưu session + chuyển trang
+//     req.session.pendingEmail = normalizedEmail;
+//     req.flash(
+//       "success",
+//       "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực trong 10 phút."
+//     );
+//     return res.redirect("/users/verify-otp");
 
-  } catch (err) {
-    console.error("Register error:", err);
-    req.flash("error", "Lỗi đăng ký! Vui lòng thử lại.");
-    return res.redirect("/users/register");
-  }
-});
+//   } catch (err) {
+//     console.error("Register error:", err);
+//     req.flash("error", "Lỗi đăng ký! Vui lòng thử lại.");
+//     return res.redirect("/users/register");
+//   }
+// });
 
 // Xác thực OTP (giữ nguyên, chỉ thêm check session nếu cần)
-app.get("/users/verify-otp", (req, res) => {
-  if (!req.session.pendingEmail) return res.redirect("/users/register");
-  res.render("users/verify-otp"); // Không override
-});
+// app.get("/users/verify-otp", (req, res) => {
+//   if (!req.session.pendingEmail) return res.redirect("/users/register");
+//   res.render("users/verify-otp"); // Không override
+// });
 
-app.post("/users/verify-otp", async (req, res) => {
-  const { otp } = req.body;
-  const email = req.session.pendingEmail;
-  if (!email) return res.redirect("/users/register");
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    req.flash("error", "Không tìm thấy tài khoản!");
-    return res.redirect("/users/register");
-  }
-  if (user.isVerified) {
-    req.flash("success", "Tài khoản đã xác thực, hãy đăng nhập!");
-    return res.redirect("/users/login");
-  }
-  if (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date()) {
-    req.flash("error", "OTP không đúng hoặc đã hết hạn!");
-    return res.redirect("/users/verify-otp");
-  }
-  user.isVerified = true;
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  await user.save();
-  delete req.session.pendingEmail;
-  req.flash("success", "Xác thực thành công! Bạn có thể đăng nhập.");
-  res.redirect("/users/login");
-});
+// app.post("/users/verify-otp", async (req, res) => {
+//   const { otp } = req.body;
+//   const email = req.session.pendingEmail;
+//   if (!email) return res.redirect("/users/register");
+//   const user = await UserModel.findOne({ email });
+//   if (!user) {
+//     req.flash("error", "Không tìm thấy tài khoản!");
+//     return res.redirect("/users/register");
+//   }
+//   if (user.isVerified) {
+//     req.flash("success", "Tài khoản đã xác thực, hãy đăng nhập!");
+//     return res.redirect("/users/login");
+//   }
+//   if (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date()) {
+//     req.flash("error", "OTP không đúng hoặc đã hết hạn!");
+//     return res.redirect("/users/verify-otp");
+//   }
+//   user.isVerified = true;
+//   user.otp = undefined;
+//   user.otpExpires = undefined;
+//   await user.save();
+//   delete req.session.pendingEmail;
+//   req.flash("success", "Xác thực thành công! Bạn có thể đăng nhập.");
+//   res.redirect("/users/login");
+// });
 
 // Đăng nhập
 app.get("/users/login", (req, res) => {
@@ -291,11 +291,11 @@ app.post("/users/login", async (req, res) => {
     req.flash("error", "Email không tồn tại!"); // Hoặc 'Email hoặc mật khẩu không đúng!' để bảo mật hơn
     return res.redirect("/users/login");
   }
-  if (!user.isVerified) {
-    req.session.pendingEmail = email;
-    req.flash("error", "Tài khoản chưa xác thực OTP. Vui lòng xác thực email!");
-    return res.redirect("/users/verify-otp");
-  }
+  // if (!user.isVerified) {
+  //   req.session.pendingEmail = email;
+  //   req.flash("error", "Tài khoản chưa xác thực OTP. Vui lòng xác thực email!");
+  //   return res.redirect("/users/verify-otp");
+  // }
  const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     req.flash("error", "Mật khẩu không đúng!");
