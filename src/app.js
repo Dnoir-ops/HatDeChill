@@ -6,7 +6,6 @@ const { DOMMatrix, ImageData, Path2D } = require("canvas");
 if (!global.DOMMatrix) global.DOMMatrix = DOMMatrix;
 if (!global.ImageData) global.ImageData = ImageData;
 if (!global.Path2D) global.Path2D = Path2D;
-
 const cors = require("cors");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
@@ -16,14 +15,13 @@ const bcrypt = require("bcrypt");
 const Book = require("./models/Book");
 const sessionAuth = require("./middleware/sessionAuth");
 const roleMiddleware = require("./middleware/roleMiddleware");
-
-
-
-
 // Models & utils
 const UserModel = require("./models/User");
 const { sendOTP } = require("./utils/mailer");
 const { generateOTP } = require("./utils/otp");
+
+
+
 
 const app = express();
 
@@ -89,27 +87,27 @@ app.use((req, res, next) => {
 });
 
 // =============================
-// 📡 Kết nối MongoDB
-
-const MONGO_USER = process.env.MONGO_USER;
-const MONGO_PASS = process.env.MONGO_PASS;
-const MONGO_HOST = process.env.MONGO_HOST;
-const MONGO_DB = process.env.MONGO_DB;
-const MONGO_OPTIONS = process.env.MONGO_OPTIONS || "retryWrites=true&w=majority&appName=Cluster0";
+// KẾT NỐI MONGODB – GỘP TỪ ENV
+// =============================
+const MONGO_USER = encodeURIComponent(process.env.MONGO_USER || '');
+const MONGO_PASS = encodeURIComponent(process.env.MONGO_PASS || '');
+const MONGO_HOST = process.env.MONGO_HOST || '';
+const MONGO_DB = process.env.MONGO_DB || '';
+const MONGO_OPTIONS = process.env.MONGO_OPTIONS || 'retryWrites=true&w=majority&appName=Cluster0';
 
 if (!MONGO_USER || !MONGO_PASS || !MONGO_HOST || !MONGO_DB) {
-  console.error("❌ Lỗi: Một hoặc nhiều biến môi trường MONGO_* không được định nghĩa trong .env");
+  console.error('MISSING MONGO ENV VARS!');
   process.exit(1);
 }
 
-const MONGO_URI = `mongodb+srv://${encodeURIComponent(MONGO_USER)}:${encodeURIComponent(MONGO_PASS)}@${MONGO_HOST}/${MONGO_DB}?${MONGO_OPTIONS}`;
+const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}/${MONGO_DB}?${MONGO_OPTIONS}`;
+
 mongoose.connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => {
-    console.error("❌ Lỗi kết nối MongoDB:", err.message);
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message);
     process.exit(1);
   });
-
 // Trang chủ
 
 app.get("/", async (req, res) => {
