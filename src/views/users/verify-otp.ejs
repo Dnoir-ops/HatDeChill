@@ -404,31 +404,30 @@
         tick();
       }
 
-      function handleResend() {
-        if (resendBtn.classList.contains("disabled")) return;
+    function handleResend() {
+          if (resendBtn.classList.contains("disabled")) return;
 
-        fetch("/users/resend-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              showToast("✓ Mã OTP đã được gửi lại", "success");
-              startCountdown(60);
-              otpInputs.forEach((i) => {
-                i.value = "";
-                i.classList.remove("filled");
-              });
-              otpValue.value = "";
-              otpInputs[0].focus();
-            } else {
-              showToast("✗ " + (data.message || "Gửi lại thất bại"), "error");
-            }
+          fetch("/users/resend-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "register" })   // <-- thêm type
           })
-          .catch(() => showToast("✗ Lỗi kết nối", "error"));
-      }
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.success) {
+                showToast("Mã OTP đã được gửi lại", "success");
+                startCountdown(60);
+                // Xóa các ô input để người dùng nhập lại
+                otpInputs.forEach(i => { i.value = ""; i.classList.remove("filled"); });
+                otpValue.value = "";
+                otpInputs[0].focus();
+              } else {
+                showToast(data.message || "Gửi lại thất bại", "error");
+              }
+            })
+            .catch(() => showToast("Lỗi kết nối", "error"));
+        }
+
 
       window.addEventListener("load", () => startCountdown(60));
     </script>
