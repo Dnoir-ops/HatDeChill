@@ -389,20 +389,37 @@
         setTimeout(() => toast.remove(), 3000);
       }
 
-      function startCountdown(sec = 60) {
-        resendBtn.classList.add("disabled");
-        let t = sec;
-        const tick = () => {
-          if (t > 0) {
-            countdownEl.textContent = `(${t--}s)`;
-            resendTimeout = setTimeout(tick, 1000);
-          } else {
-            countdownEl.textContent = "";
-            resendBtn.classList.remove("disabled");
-          }
-        };
-        tick();
+      function showToast(msg, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
       }
+
+          function startCountdown(sec = 60) {
+      // DỪNG TIMER CŨ (nếu có)
+      if (resendTimeout) {
+        clearTimeout(resendTimeout);
+        resendTimeout = null;
+      }
+
+      resendBtn.classList.add("disabled");
+      let t = sec;
+
+      const tick = () => {
+        if (t > 0) {
+          countdownEl.textContent = `(${t--}s)`;
+          resendTimeout = setTimeout(tick, 1000);
+        } else {
+          countdownEl.textContent = "";
+          resendBtn.classList.remove("disabled");
+          resendTimeout = null; // Reset
+        }
+      };
+
+      tick();
+    }
 
     function handleResend() {
           if (resendBtn.classList.contains("disabled")) return;
