@@ -270,6 +270,48 @@ app.post("/users/verify-otp", async (req, res) => {
   res.redirect("/users/login");
 });
 
+app.post("/users/resend-otp", async (req, res) => {
+  const { type } = req.body;          // "register" hoặc "reset"
+  const email = type === "register"
+    ? req.session.pendingUser?.email
+    : req.session.resetEmail;
+
+  if (!email) {
+    return res.json({ success: false, message: "Phiên hết hạn." });
+  }
+
+  try {
+    const otp = generateOTP();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 phút
+
+    if (type === "register") {
+      // Cập nhật session (đăng ký)
+      if (!req.session.pendingUser) {
+        return res.json({ success: false, message: "Phiên đăng ký đã mất." });
+      }
+      req.session.pendingUser.otp = otp;
+      req.session.pendingUser.otpExpires = otpExpires;
+    } else {
+      // Cập nhật DB (quên mật khẩu)
+      const user = await UserModel.findOneAndUpdate(
+        { email },
+        { otp, otpExpires },
+        { new: true }
+      );
+      if (!user) {
+        return res.json({ success: false, message: "Không tìm thấy tài khoản." });
+      }
+    }
+
+    await sendOTP(email, otp);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Resend OTP error:", err);
+    res.json({ success: false, message: "Lỗi gửi OTP." });
+  }
+});
+
+
 // Đăng nhập
 app.get("/users/login", (req, res) => {
   // Bỏ { error: null }
