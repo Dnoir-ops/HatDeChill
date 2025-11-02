@@ -1,12 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const { DOMMatrix, ImageData, Path2D } = require("canvas");
-
-if (!global.DOMMatrix) global.DOMMatrix = DOMMatrix;
-if (!global.ImageData) global.ImageData = ImageData;
-if (!global.Path2D) global.Path2D = Path2D;
-
 const cors = require("cors");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
@@ -174,6 +168,7 @@ app.get("/users/register", (req, res) => {
   res.render("users/register"); // Không pass error/success → Dùng res.locals từ flash
 });
 
+// POST /users/register - Chỉ gửi OTP, KHÔNG tạo user
 app.post("/users/register", async (req, res) => {
   // Kiểm tra nếu đã login
   if (req.session.user) {
@@ -181,7 +176,7 @@ app.post("/users/register", async (req, res) => {
     return res.redirect("/");
   }
 
-const { name, email, password, role = "author" } = req.body; // Default role
+  const { name, email, password, role = "author" } = req.body;
 
   // Validation cơ bản
   if (!name || !email || !password || password.length < 6) {
@@ -189,6 +184,7 @@ const { name, email, password, role = "author" } = req.body; // Default role
     return res.redirect("/users/register");
   }
 
+  // Kiểm tra email đã tồn tại
   const exists = await UserModel.findOne({ email });
   if (exists) {
     req.flash("error", "Email đã tồn tại!");
@@ -196,79 +192,94 @@ const { name, email, password, role = "author" } = req.body; // Default role
   }
 
   try {
-    // ❌ Bỏ hash thủ công: Để pre-save hook lo
-    // const hashedPassword = await bcrypt.hash(password, 10);  // Xóa dòng này
-
+    // Tạo OTP
     const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 phút
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 phút
 
-    const user = new UserModel({
+    // LƯU THÔNG TIN TẠM VÀO SESSION (KHÔNG LƯU DB)
+    req.session.pendingUser = {
       name,
       email,
-      password, // ✅ Plain password → hook sẽ hash khi save
+      password,
       role,
       otp,
       otpExpires,
-      isVerified: false,
-    });
+    };
 
-    // Lưu user (hook hash tự động)
-    await user.save();
+    // Gửi OTP
+    await sendOTP(email, otp);
 
-    // Gửi OTP và rollback nếu fail
-    try {
-      await sendOTP(email, otp); // Giả sử sendOTP là async
-    } catch (sendErr) {
-      await UserModel.findByIdAndDelete(user._id); // Rollback
-      console.error("Lỗi gửi OTP:", sendErr);
-      req.flash("error", "Lỗi gửi OTP! Vui lòng thử lại.");
-      return res.redirect("/users/register");
-    }
-
-    req.session.pendingEmail = email;
-    req.flash(
-      "success",
-      "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực trong 10 phút."
-    );
+    req.session.pendingEmail = email; // Dùng để kiểm tra ở GET verify-otp
+    req.flash("success", "Đã gửi mã OTP đến email. Vui lòng kiểm tra và xác thực trong 10 phút.");
     return res.redirect("/users/verify-otp");
+
   } catch (err) {
-    console.error("Register error:", err);
-    req.flash("error", "Lỗi đăng ký! Vui lòng thử lại.");
-    res.redirect("/users/register");
+    console.error("Lỗi gửi OTP:", err);
+    req.flash("error", "Không thể gửi email. Vui lòng thử lại.");
+    delete req.session.pendingUser;
+    return res.redirect("/users/register");
   }
 });
 
 // Xác thực OTP (giữ nguyên, chỉ thêm check session nếu cần)
 app.get("/users/verify-otp", (req, res) => {
-  if (!req.session.pendingEmail) return res.redirect("/users/register");
-  res.render("users/verify-otp"); // Không override
+  if (!req.session.pendingUser) {
+    req.flash("error", "Phiên đăng ký đã hết hạn. Vui lòng đăng ký lại.");
+    return res.redirect("/users/register");
+  }
+  res.render("users/verify-otp");
 });
 
 app.post("/users/verify-otp", async (req, res) => {
   const { otp } = req.body;
-  const email = req.session.pendingEmail;
-  if (!email) return res.redirect("/users/register");
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    req.flash("error", "Không tìm thấy tài khoản!");
+  const pending = req.session.pendingUser;
+
+  if (!pending) {
+    req.flash("error", "Phiên đăng ký đã hết hạn.");
     return res.redirect("/users/register");
   }
-  if (user.isVerified) {
-    req.flash("success", "Tài khoản đã xác thực, hãy đăng nhập!");
-    return res.redirect("/users/login");
-  }
-  if (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date()) {
-    req.flash("error", "OTP không đúng hoặc đã hết hạn!");
+
+  // Kiểm tra OTP và thời gian
+  if (pending.otp !== otp || Date.now() > pending.otpExpires) {
+    req.flash("error", "Mã OTP không đúng hoặc đã hết hạn!");
     return res.redirect("/users/verify-otp");
   }
-  user.isVerified = true;
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  await user.save();
-  delete req.session.pendingEmail;
-  req.flash("success", "Xác thực thành công! Bạn có thể đăng nhập.");
-  res.redirect("/users/login");
+
+  try {
+    // TẠI ĐÂY MỚI TẠO USER
+    const user = new UserModel({
+      name: pending.name,
+      email: pending.email,
+      password: pending.password,
+      role: pending.role,
+      isVerified: true, // Đã xác minh
+    });
+    await user.save();
+
+    // Đăng nhập tự động
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    // Xóa dữ liệu tạm
+    delete req.session.pendingUser;
+    delete req.session.pendingEmail;
+
+    req.flash("success", "Đăng ký thành công! Chào mừng bạn.");
+    return res.redirect("/");
+
+  } catch (err) {
+    console.error("Lỗi tạo user:", err);
+    req.flash("error", "Lỗi tạo tài khoản. Vui lòng thử lại.");
+    return res.redirect("/users/verify-otp");
+  }
 });
+
+
+
 
 // Đăng nhập
 app.get("/users/login", (req, res) => {
@@ -390,6 +401,51 @@ app.post(
     }
   }
 );
+
+
+// =============================
+// RESEND OTP (đăng ký & quên mật khẩu)
+// =============================
+app.post("/users/resend-otp", async (req, res) => {
+  const { type } = req.body;          // "register" hoặc "reset"
+  const email = type === "register"
+    ? req.session.pendingUser?.email
+    : req.session.resetEmail;
+
+  if (!email) {
+    return res.json({ success: false, message: "Phiên hết hạn." });
+  }
+
+  try {
+    const otp = generateOTP();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 phút
+
+    if (type === "register") {
+      // Cập nhật session (đăng ký)
+      if (!req.session.pendingUser) {
+        return res.json({ success: false, message: "Phiên đăng ký đã mất." });
+      }
+      req.session.pendingUser.otp = otp;
+      req.session.pendingUser.otpExpires = otpExpires;
+    } else {
+      // Cập nhật DB (quên mật khẩu)
+      const user = await UserModel.findOneAndUpdate(
+        { email },
+        { otp, otpExpires },
+        { new: true }
+      );
+      if (!user) {
+        return res.json({ success: false, message: "Không tìm thấy tài khoản." });
+      }
+    }
+
+    await sendOTP(email, otp);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Resend OTP error:", err);
+    res.json({ success: false, message: "Lỗi gửi OTP." });
+  }
+});
 
 // ======= QUÊN MẬT KHẨU =======
 app.get("/users/forgot-password", (req, res) =>
