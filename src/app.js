@@ -229,34 +229,53 @@ app.post("/users/register", async (req, res) => {
 
 // Xác thực OTP (giữ nguyên, chỉ thêm check session nếu cần)
 app.get("/users/verify-otp", (req, res) => {
-  if (!req.session.pendingEmail) return res.redirect("/users/register");
-  res.render("users/verify-otp"); // Không override
-});
-
-app.post("/users/verify-otp", async (req, res) => {
-  const { otp } = req.body;
-  const email = req.session.pendingEmail;
-  if (!email) return res.redirect("/users/register");
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    req.flash("error", "Không tìm thấy tài khoản!");
+  if (!req.session.pendingUser) {
+    req.flash("error", "Phiên đăng ký đã hết hạn.");
     return res.redirect("/users/register");
   }
-  if (user.isVerified) {
-    req.flash("success", "Tài khoản đã xác thực, hãy đăng nhập!");
-    return res.redirect("/users/login");
+  res.render("users/verify-otp");
+});
+
+// POST /users/verify-otp
+app.post("/users/verify-otp", async (req, res) => {
+  const { otp } = req.body;
+
+  // Kiểm tra session có pendingUser không
+  if (!req.session.pendingUser) {
+    req.flash("error", "Phiên đăng ký đã hết hạn. Vui lòng đăng ký lại.");
+    return res.redirect("/users/register");
   }
-  if (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date()) {
+
+  const { name, email, password, role, otp: storedOtp, otpExpires } = req.session.pendingUser;
+
+  // Kiểm tra OTP
+  if (storedOtp !== otp || otpExpires < Date.now()) {
     req.flash("error", "OTP không đúng hoặc đã hết hạn!");
     return res.redirect("/users/verify-otp");
   }
-  user.isVerified = true;
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  await user.save();
-  delete req.session.pendingEmail;
-  req.flash("success", "Xác thực thành công! Bạn có thể đăng nhập.");
-  res.redirect("/users/login");
+
+  try {
+    // TẠO USER SAU KHI OTP ĐÚNG
+    const user = new UserModel({
+      name,
+      email,
+      password,        // pre-save hook sẽ hash
+      role,
+      isVerified: true,
+    });
+    await user.save();
+
+    // XÓA SESSION ĐĂNG KÝ
+    delete req.session.pendingUser;
+    delete req.session.pendingEmail;
+
+    req.flash("success", "Đăng ký thành công! Bạn có thể đăng nhập.");
+    return res.redirect("/users/login");
+  } catch (err) {
+    console.error("Lỗi tạo user:", err);
+    req.flash("error", "Lỗi hệ thống. Vui lòng thử lại.");
+    return res.redirect("/users/register");
+  }
 });
 
 app.post("/users/resend-otp", async (req, res) => {
