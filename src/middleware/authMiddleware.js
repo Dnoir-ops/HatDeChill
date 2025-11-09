@@ -8,15 +8,17 @@ module.exports = (req, res, next) => {
     sessionID: req.sessionID,
     cookies: req.headers.cookie ? 'Present' : 'Missing'
   });
-  const { type } = req.body;
-  const hasSession = type === "register"
-    ? !!req.session.pendingUser
-    : !!req.session.resetEmail;
+const { type } = req.body;
+  if (type === "register" || type === "reset") {
+    const hasSession = type === "register"
+      ? !!req.session.pendingUser
+      : !!req.session.resetEmail;
 
-  if (!hasSession) {
-    return res.status(400).json({ success: false, message: "Phiên hết hạn." });
+    if (!hasSession) {
+      return res.status(400).json({ success: false, message: "Phiên hết hạn." });
+    }
+    return next(); // ← Dừng ở đây nếu là OTP
   }
-  next();
   
   // ✅ Kiểm tra session tồn tại và có user
   if (!req.session || !req.session.user) {
