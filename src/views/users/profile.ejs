@@ -221,11 +221,19 @@
       "
     >
       <div class="profile-container">
+             
         <div class="profile-header">
           <i class="fas fa-user-circle"></i>
           <h1>Hồ Sơ Cá Nhân</h1>
           <p>Cập nhật thông tin của bạn</p>
         </div>
+
+           <% if (success && success.length > 0) { %>
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span><%= success[0] %></span>
+          </div>
+        <% } %>
         <div class="profile-body">
           <% if (error) { %>
           <div class="alert alert-info">
