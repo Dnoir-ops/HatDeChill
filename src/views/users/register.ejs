@@ -431,6 +431,385 @@
           height: 120px;
         }
       }
+        /* Mobile lớn (768px trở xuống) */
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+          overflow: auto;
+        }
+
+        .login-container {
+          margin: 0;
+          border-radius: 15px;
+        }
+
+        .login-wrapper {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Left side - xuống dưới */
+        .login-left {
+          padding: 40px 30px;
+          order: 2;
+          border-radius: 0 0 15px 15px;
+        }
+
+        .login-left h1 {
+          font-size: 24px;
+          margin-bottom: 15px;
+        }
+
+        .login-left p {
+          font-size: 14px;
+          margin-bottom: 20px;
+        }
+
+        .qr-code {
+          padding: 12px;
+          margin-bottom: 15px;
+        }
+
+        .qr-code img {
+          width: 120px;
+          height: 120px;
+        }
+
+        .qr-text {
+          font-size: 13px;
+        }
+
+        /* Right side - lên trên */
+        .login-right {
+          padding: 40px 30px;
+          order: 1;
+          border-radius: 15px 15px 0 0;
+          max-height: none;
+        }
+
+        .login-right h2 {
+          font-size: 24px;
+          margin-bottom: 8px;
+          padding-top: 0;
+        }
+
+        .login-subtitle {
+          margin-bottom: 30px;
+          font-size: 13px;
+        }
+
+        .form-group {
+          margin-bottom: 18px;
+        }
+
+        .form-group label {
+          font-size: 13px;
+          margin-bottom: 6px;
+        }
+
+        .form-control {
+          padding: 11px 14px;
+          font-size: 14px;
+        }
+
+        .btn-login {
+          padding: 11px 18px;
+          font-size: 15px;
+        }
+
+        .alert {
+          padding: 10px 13px;
+          font-size: 13px;
+          margin-bottom: 18px;
+        }
+
+        .password-requirements {
+          font-size: 11px;
+        }
+
+        .requirement-icon {
+          width: 15px;
+          height: 15px;
+          font-size: 9px;
+        }
+
+        .strength-text {
+          font-size: 11px;
+        }
+
+        .divider {
+          margin: 25px 0;
+          font-size: 13px;
+        }
+
+        .signup-link {
+          font-size: 13px;
+        }
+
+        .modal-content-box {
+          width: 90%;
+          padding: 35px 25px;
+        }
+      }
+
+      /* Mobile nhỏ (576px trở xuống) */
+      @media (max-width: 576px) {
+        body {
+          padding: 10px;
+        }
+
+        .login-container {
+          border-radius: 12px;
+        }
+
+        .login-left {
+          padding: 30px 20px;
+          border-radius: 0 0 12px 12px;
+        }
+
+        .login-left h1 {
+          font-size: 22px;
+          margin-bottom: 12px;
+        }
+
+        .login-left p {
+          font-size: 13px;
+          margin-bottom: 18px;
+        }
+
+        .qr-code {
+          padding: 10px;
+          margin-bottom: 12px;
+        }
+
+        .qr-code img {
+          width: 100px;
+          height: 100px;
+        }
+
+        .qr-text {
+          font-size: 12px;
+        }
+
+        .login-right {
+          padding: 30px 20px;
+          border-radius: 12px 12px 0 0;
+        }
+
+        .login-right h2 {
+          font-size: 22px;
+          margin-bottom: 6px;
+        }
+
+        .login-subtitle {
+          margin-bottom: 25px;
+          font-size: 12px;
+        }
+
+        .form-group {
+          margin-bottom: 16px;
+        }
+
+        .form-group label {
+          font-size: 12px;
+          margin-bottom: 5px;
+        }
+
+        .form-control {
+          padding: 10px 12px;
+          font-size: 13px;
+          border-radius: 8px;
+        }
+
+        .btn-login {
+          padding: 10px 16px;
+          font-size: 14px;
+          border-radius: 8px;
+        }
+
+        .alert {
+          padding: 9px 12px;
+          font-size: 12px;
+          margin-bottom: 16px;
+          border-radius: 8px;
+        }
+
+        .password-requirements {
+          font-size: 10px;
+          padding: 8px;
+        }
+
+        .requirement-icon {
+          width: 14px;
+          height: 14px;
+        }
+
+        .divider {
+          margin: 20px 0;
+          font-size: 12px;
+        }
+
+        .signup-link {
+          margin-top: 15px;
+          font-size: 12px;
+        }
+
+        .modal-content-box {
+          width: 95%;
+          padding: 30px 20px;
+        }
+      }
+
+      /* Mobile cực nhỏ (400px trở xuống) */
+      @media (max-width: 400px) {
+        body {
+          padding: 5px;
+        }
+
+        .login-left {
+          padding: 25px 15px;
+        }
+
+        .login-left h1 {
+          font-size: 20px;
+        }
+
+        .login-left p {
+          font-size: 12px;
+        }
+
+        .qr-code {
+          padding: 8px;
+        }
+
+        .qr-code img {
+          width: 90px;
+          height: 90px;
+        }
+
+        .login-right {
+          padding: 25px 15px;
+        }
+
+        .login-right h2 {
+          font-size: 20px;
+        }
+
+        .form-control {
+          padding: 9px 11px;
+          font-size: 12px;
+        }
+
+        .btn-login {
+          padding: 9px 14px;
+          font-size: 13px;
+        }
+
+        .password-requirements {
+          font-size: 9px;
+          padding: 6px;
+        }
+      }
+
+      /* Landscape mode cho mobile */
+      @media (max-width: 896px) and (orientation: landscape) {
+        body {
+          padding: 10px;
+        }
+
+        .login-container {
+          margin: 10px auto;
+        }
+
+        .login-wrapper {
+          grid-template-columns: 1fr 1fr !important;
+        }
+
+        .login-left {
+          padding: 30px 25px;
+          order: 1;
+          border-radius: 15px 0 0 15px;
+        }
+
+        .login-left h1 {
+          font-size: 20px;
+          margin-bottom: 10px;
+        }
+
+        .login-left p {
+          font-size: 12px;
+          margin-bottom: 15px;
+        }
+
+        .qr-code {
+          padding: 8px;
+          margin-bottom: 10px;
+        }
+
+        .qr-code img {
+          width: 80px;
+          height: 80px;
+        }
+
+        .qr-text {
+          font-size: 11px;
+        }
+
+        .login-right {
+          padding: 30px 25px;
+          order: 2;
+          border-radius: 0 15px 15px 0;
+        }
+
+        .login-right h2 {
+          font-size: 20px;
+        }
+
+        .login-subtitle {
+          margin-bottom: 20px;
+        }
+
+        .form-group {
+          margin-bottom: 12px;
+        }
+
+        .form-control {
+          padding: 8px 10px;
+        }
+
+        .btn-login {
+          padding: 8px 14px;
+          font-size: 13px;
+        }
+
+        .divider {
+          margin: 15px 0;
+        }
+
+        .password-requirements {
+          font-size: 10px;
+        }
+      }
+
+      /* Fix animation giật trên mobile */
+      @media (max-width: 768px) {
+        .btn-login:hover {
+          transform: translateY(0);
+        }
+
+        .btn-login:active {
+          transform: scale(0.98);
+        }
+      }
+
+      /* Đảm bảo form không bị tràn */
+      @media (max-width: 576px) {
+        .form-control,
+        .btn-login,
+        .alert {
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
     </style>
   </head>
   <body>
