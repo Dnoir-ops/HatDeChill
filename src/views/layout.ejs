@@ -602,6 +602,54 @@
           margin: 10px !important;
         }
       }
+        /* ===== RESPONSIVE CHO ĐIỆN THOẠI ===== */
+        @media (max-width: 992px) {
+          /* Navbar */
+          .navbar-brand { font-size: 1.2rem !important; }
+          .navbar-brand::before { width: 50px; height: 40px; margin-right: 8px; }
+          .navbar-nav .nav-link { font-size: 1rem; padding: 10px 15px !important; margin: 5px 0; }
+          .user-dropdown .dropdown-toggle { font-size: 1rem; padding: 10px 15px !important; }
+
+          /* Ad overlay */
+          .ad-content { padding: 30px 20px; width: 95%; max-height: 90vh; overflow-y: auto; }
+          .ad-content h2 { font-size: 24px; margin-bottom: 15px; }
+          .ad-content p { font-size: 16px; margin-bottom: 15px; }
+          .ad-logo { height: 180px; margin: 15px auto; }
+          .ad-features { gap: 15px; flex-direction: column; align-items: center; }
+          .ad-feature { font-size: 14px; }
+          .ad-cta { padding: 12px 30px; font-size: 16px; }
+          .close-btn { width: 40px; height: 40px; font-size: 24px; top: 10px; right: 10px; }
+        }
+
+        @media (max-width: 768px) {
+          /* Login modal */
+          .login-modal-grid { grid-template-columns: 1fr !important; }
+          .login-modal-left { border-radius: 20px 20px 0 0; padding: 30px 20px; order: 2; }
+          .login-modal-left h3 { font-size: 22px; margin-bottom: 15px; }
+          .login-modal-left p { font-size: 14px; margin-bottom: 20px; }
+          .login-modal-qr { padding: 15px; }
+          .login-modal-qr-code img { width: 100px; height: 100px; }
+          .login-modal-right { border-radius: 0 0 20px 20px; padding: 30px 20px; order: 1; }
+          .login-modal-right h4 { font-size: 20px; }
+          .modal-dialog { margin: 10px !important; }
+          main { margin-top: 20px !important; padding: 0 10px; }
+          .footer { font-size: 14px; padding: 20px 0 !important; }
+        }
+
+        @media (max-width: 576px) {
+          /* Màn hình nhỏ */
+          .navbar-brand { font-size: 1rem !important; }
+          .navbar-brand::before { width: 40px; height: 35px; margin-right: 5px; }
+          .navbar-nav .nav-link { font-size: 0.95rem; padding: 8px 12px !important; }
+          .navbar-nav .nav-link i { font-size: 1rem; }
+          .ad-content { padding: 25px 15px; }
+          .ad-content h2 { font-size: 20px; }
+          .ad-content p { font-size: 14px; }
+          .ad-logo { height: 150px; }
+          .ad-cta { padding: 10px 25px; font-size: 14px; }
+          .login-modal-right, .login-modal-left { padding: 25px 15px; }
+          .alert { font-size: 0.9rem; }
+        }
     </style>
   </head>
   <body class="d-flex flex-column min-vh-100">
