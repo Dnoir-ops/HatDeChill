@@ -700,6 +700,455 @@
       margin-bottom: 30px;
     }
   }
+ /* ===== RESPONSIVE CHO ĐIỆN THOẠI ===== */
+
+/* Tablet & Mobile lớn (992px trở xuống) */
+@media (max-width: 992px) {
+  .page-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .page-header .lead {
+    font-size: 1rem;
+  }
+
+  .search-inner {
+    padding: 6px 6px 6px 50px;
+  }
+
+  .search-icon {
+    left: 20px;
+    font-size: 18px;
+  }
+
+  .search-input {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+
+  .search-btn {
+    width: 45px;
+    height: 45px;
+  }
+
+  /* Sidebar chuyển thành full width */
+  .category-sidebar {
+    position: static;
+    margin-bottom: 30px;
+  }
+
+  /* Book grid giảm số cột */
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+  }
+
+  .book-cover {
+    height: 240px;
+  }
+
+  .book-title-below h5 {
+    font-size: 0.95rem;
+  }
+
+  /* Tooltip xuất hiện bên phải/trái tùy vị trí */
+  .book-tooltip {
+    width: 280px;
+  }
+
+  .tooltip-title {
+    font-size: 16px;
+  }
+
+  .tooltip-info {
+    font-size: 13px;
+  }
+
+  /* Pagination nhỏ hơn */
+  .page-link-pro {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .empty-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 50px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+  }
+}
+
+/* Mobile (768px trở xuống) */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .page-header {
+    padding: 1.5rem 0;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+
+  .page-header .lead {
+    font-size: 0.95rem;
+  }
+
+  /* Alert */
+  .alert-success-custom,
+  .alert-danger-custom {
+    padding: 0.8rem 1.2rem;
+    font-size: 14px;
+  }
+
+  /* Search box */
+  .search-box {
+    margin-bottom: 30px;
+  }
+
+  .search-inner {
+    padding: 5px 5px 5px 45px;
+    border-radius: 40px;
+  }
+
+  .search-icon {
+    left: 15px;
+    font-size: 16px;
+  }
+
+  .search-input {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  .search-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .clear-search-btn {
+    font-size: 14px;
+    padding: 6px 15px;
+  }
+
+  /* Category sidebar */
+  .sidebar-header {
+    padding: 15px;
+    font-size: 16px;
+  }
+
+  .category-list {
+    padding: 8px;
+  }
+
+  .category-item {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .category-item i:first-child {
+    font-size: 14px;
+  }
+
+  /* Book grid - 2-3 cột */
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .book-cover {
+    height: 200px;
+  }
+
+  .book-title-below {
+    min-height: 50px;
+  }
+
+  .book-title-below h5 {
+    font-size: 0.85rem;
+  }
+
+  /* Tooltip nhỏ hơn và đổi vị trí */
+  .book-tooltip {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 15px;
+    width: 260px;
+    padding: 18px;
+  }
+
+  .book-tooltip::before {
+    left: auto;
+    right: -10px;
+    border-right: none;
+    border-left: 10px solid rgba(40, 0, 50, 0.95);
+  }
+
+  .tooltip-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .tooltip-info {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .tooltip-description {
+    font-size: 12px;
+    max-height: 120px;
+  }
+
+  .favorite-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Pagination */
+  .pagination-pro {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .page-link-pro {
+    width: 35px;
+    height: 35px;
+    font-size: 13px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 40px 15px;
+  }
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+}
+
+/* Mobile nhỏ (576px trở xuống) */
+@media (max-width: 576px) {
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-header h1 i {
+    font-size: 1.2rem;
+  }
+
+  .page-header .lead {
+    font-size: 0.9rem;
+  }
+
+  /* Search */
+  .search-inner {
+    padding: 4px 4px 4px 40px;
+  }
+
+  .search-icon {
+    left: 12px;
+    font-size: 14px;
+  }
+
+  .search-input {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .search-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .search-btn i {
+    font-size: 14px;
+  }
+
+  /* Category sidebar */
+  .sidebar-header {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .category-item {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* Book grid - 2 cột */
+  .book-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .book-cover {
+    height: 180px;
+  }
+
+  .book-title-below {
+    min-height: 45px;
+  }
+
+  .book-title-below h5 {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+
+  /* Tooltip siêu nhỏ */
+  .book-tooltip {
+    width: 240px;
+    padding: 15px;
+  }
+
+  .tooltip-title {
+    font-size: 14px;
+  }
+
+  .tooltip-info {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .tooltip-info i {
+    width: 14px;
+    font-size: 11px;
+  }
+
+  .tooltip-description {
+    font-size: 11px;
+    line-height: 1.5;
+    max-height: 100px;
+  }
+
+  .favorite-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* Pagination */
+  .pagination-pro {
+    gap: 4px;
+  }
+
+  .page-link-pro {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  /* Ẩn một số page numbers trên mobile nhỏ */
+  .pagination-pro li:nth-child(n+8):nth-last-child(n+3) {
+    display: none;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 30px 10px;
+  }
+
+  .empty-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+  }
+
+  .empty-state h3 {
+    font-size: 16px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+  }
+
+  .btn-primary-gradient {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+/* Fix cho tooltip không tràn màn hình */
+@media (max-width: 768px) {
+  .book-item {
+    position: relative;
+  }
+
+  /* Logic tooltip tự động căn chỉnh */
+  .book-item:first-child .book-tooltip,
+  .book-item:nth-child(2) .book-tooltip {
+    left: 100%;
+    right: auto;
+    margin-left: 15px;
+    margin-right: 0;
+  }
+
+  .book-item:first-child .book-tooltip::before,
+  .book-item:nth-child(2) .book-tooltip::before {
+    left: -10px;
+    right: auto;
+    border-left: none;
+    border-right: 10px solid rgba(40, 0, 50, 0.95);
+  }
+}
+
+/* Hiệu ứng smooth scroll */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Giảm animation trên mobile để tăng performance */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+
+  .book-item:hover .book-cover {
+    transform: scale(1.02);
+  }
+}
+
+/* Landscape mode cho mobile */
+@media (max-width: 896px) and (orientation: landscape) {
+  .page-header {
+    padding: 1rem 0;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .book-cover {
+    height: 160px;
+  }
+
+  .category-sidebar {
+    position: static;
+  }
+}
 </style>
 
 <script>
