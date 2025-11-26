@@ -208,6 +208,95 @@
       .form-section-title:first-child {
         margin-top: 0;
       }
+/* Fix navbar và footer cho mobile 400px */
+@media (max-width: 400px) {
+  /* Navbar */
+  .navbar {
+    padding: 10px 12px !important;
+  }
+
+  .navbar .navbar-brand {
+    font-size: 16px !important;
+  }
+
+  .navbar .navbar-brand img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .navbar-toggler {
+    padding: 4px 8px !important;
+    font-size: 18px !important;
+  }
+
+  .navbar-collapse {
+    margin-top: 10px !important;
+  }
+
+  .navbar-nav {
+    gap: 8px !important;
+  }
+
+  .nav-link {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+
+  /* Footer */
+  footer {
+    padding: 15px 12px !important;
+    font-size: 12px !important;
+  }
+
+  footer p {
+    margin: 0 !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Container wrapper bên ngoài */
+  body > div[style] {
+    padding: 0 !important;
+  }
+
+  /* Profile container spacing */
+  .profile-container {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Đảm bảo body có scroll khi cần */
+  body {
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Fix thêm cho 360px */
+@media (max-width: 360px) {
+  .navbar {
+    padding: 8px 10px !important;
+  }
+
+  .navbar .navbar-brand {
+    font-size: 14px !important;
+  }
+
+  .navbar .navbar-brand img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  footer {
+    padding: 12px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .profile-container {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+  }
+}
     </style>
   </head>
   <body>
